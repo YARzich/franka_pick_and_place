@@ -1,0 +1,10 @@
+# Responsibility: Provide fixed Isaac Sim world observations for the camera-free V2 scenario.
+schema_version: 1
+provider_id: configured
+
+observations:
+  cube:
+    frame_id: panda_link0
+    # Match the dynamic-cube center configured by IsaacMoveItScenario.
+    position_xyz: [0.4, 0.0, 0.03]
+    orientation_xyzw: [0.0, 0.0, 0.0, 1.0]

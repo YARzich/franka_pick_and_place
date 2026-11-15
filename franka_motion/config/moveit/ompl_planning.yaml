@@ -1,0 +1,37 @@
+# Responsibility: Configure the OMPL planning pipeline and request adapters.
+# Adapted from moveit_resources_panda_moveit_config (BSD-3-Clause).
+# A single explicit configuration is easier to tune and compare with optional
+# backends than the full OMPL catalog. RRTConnect itself remains randomized.
+planning_plugins:
+  - ompl_interface/OMPLPlanner
+
+request_adapters:
+  - default_planning_request_adapters/ResolveConstraintFrames
+  - default_planning_request_adapters/ValidateWorkspaceBounds
+  - default_planning_request_adapters/CheckStartStateBounds
+  - default_planning_request_adapters/CheckStartStateCollision
+
+response_adapters:
+  - default_planning_response_adapters/AddTimeOptimalParameterization
+  - default_planning_response_adapters/ValidateSolution
+  - default_planning_response_adapters/DisplayMotionPath
+
+planner_configs:
+  RRTConnectkConfigDefault:
+    type: geometric::RRTConnect
+    # Zero lets OMPL choose a range from the state-space extent.
+    range: 0.0
+
+panda_arm:
+  default_planner_config: RRTConnectkConfigDefault
+  planner_configs:
+    - RRTConnectkConfigDefault
+  # Collision checking during planning must not be coarser than the
+  # post-plan ValidateSolution pass, or OMPL occasionally returns paths that
+  # skim a 1.5 cm octomap voxel between its sparse checks and the pipeline
+  # rejects its own plan with INVALID_MOTION_PLAN. The MoveIt default
+  # (0.5% of the 7-DOF state-space extent) steps several centimeters of EE
+  # travel per check; these bounds keep every checked segment near or below
+  # the octomap resolution.
+  longest_valid_segment_fraction: 0.001
+  maximum_waypoint_distance: 0.01

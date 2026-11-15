@@ -1,0 +1,11 @@
+# Responsibility: Record canonical URDF and SRDF inputs for MoveIt Setup Assistant.
+moveit_setup_assistant_config:
+  URDF:
+    package: franka_motion
+    relative_path: description/urdf/panda_nomimic.urdf.xacro
+  SRDF:
+    relative_path: config/moveit/panda.srdf
+  CONFIG:
+    author_name: Yaroslav
+    author_email: yaroslav@todo.todo
+    generated_timestamp: 0

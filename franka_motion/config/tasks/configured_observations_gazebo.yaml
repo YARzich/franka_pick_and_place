@@ -1,0 +1,10 @@
+# Responsibility: Provide fixed Gazebo world observations for the camera-free V2 scenario.
+schema_version: 1
+provider_id: configured
+
+observations:
+  cube:
+    frame_id: panda_link0
+    # Keep semantic geometry 2 mm above the table to avoid contact-as-collision.
+    position_xyz: [0.405, 0.0, 0.027]
+    orientation_xyzw: [0.0, 0.0, 0.0, 1.0]

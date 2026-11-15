@@ -1,0 +1,7 @@
+# Responsibility: Configure health-admission policy for the simulation graph.
+# Does not own: Panda frames, joints, controllers, or gripper endpoint.
+system_health_monitor:
+  ros__parameters:
+    require_sim_clock: true
+    motion_backend_action: /move_action
+    motion_backend_action_type: moveit_msgs/action/MoveGroup

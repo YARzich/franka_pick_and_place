@@ -1,0 +1,6 @@
+# Responsibility: Extend the steady-clock lifetime of an active scene lease.
+string lease_id
+builtin_interfaces/Duration requested_ttl
+---
+builtin_interfaces/Duration granted_ttl
+PlanningSceneOperationResult result

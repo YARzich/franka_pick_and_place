@@ -1,0 +1,5 @@
+# Responsibility: Read the monitor's cached health snapshot without probing dependencies.
+# The service returns the latest bounded-rate snapshot
+# or performing recovery. The response is read-only and expected to be fast.
+---
+SystemHealthSnapshot snapshot

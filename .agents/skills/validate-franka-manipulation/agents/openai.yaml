@@ -1,0 +1,7 @@
+# Responsibility: Describe the Franka runtime validation skill in agent UIs.
+interface:
+  display_name: "Validate Franka Manipulation"
+  short_description: "Проверка Franka в Gazebo и Isaac Sim"
+  default_prompt: "Используй $validate-franka-manipulation для запуска подходящего runtime-профиля Franka и кратко сообщи evidence и cleanup результат."
+policy:
+  allow_implicit_invocation: true

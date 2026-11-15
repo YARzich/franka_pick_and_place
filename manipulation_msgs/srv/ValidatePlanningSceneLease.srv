@@ -1,0 +1,21 @@
+# Responsibility: Validate scene ownership before a physical side effect.
+# The coordinator may purge other expired leases as internal housekeeping.
+string lease_id
+
+# Canonical unique keys that this client is about to use. The active lease may
+# own additional keys, but it must own every key listed here.
+string[] required_resource_keys
+
+# Must equal the coordinator's current global revision. There is no wildcard
+# value: callers resynchronize explicitly after REVISION_MISMATCH.
+uint64 expected_revision
+---
+# Current coordinator session, returned on both success and failure so a client
+# can distinguish restart from ordinary expiry or ownership loss.
+string session_id
+
+# Steady-clock duration until expiry on success. Zero on failure. It can be
+# compared with a local remaining task duration, but not converted to ROS time.
+builtin_interfaces/Duration remaining_ttl
+
+PlanningSceneOperationResult result

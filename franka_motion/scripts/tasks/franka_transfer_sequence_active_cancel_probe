@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""
+Start the Franka TransferObjectSequenceV2 active-cancel probe.
+
+Responsibility:
+- Provide the stable ros2 executable entrypoint for active-cancel evidence.
+
+Does not own:
+- Goal parameters, action transport, cancellation, or evidence validation.
+"""
+
+from franka_motion_runtime.tasks.active_cancel_client import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

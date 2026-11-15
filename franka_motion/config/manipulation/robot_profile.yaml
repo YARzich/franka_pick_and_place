@@ -1,0 +1,71 @@
+# Responsibility: Bind generic manipulation components to the Panda model,
+# MoveIt groups, controllers, frames, joints, and gripper endpoint.
+#
+# Does not own: workflow timing, recovery, perception, scene-lease, or motion
+# policy. Those values remain in the component-specific policy YAML files.
+# Basename wildcards preserve these bindings when a graph adds a ROS namespace.
+/**/planning_scene_coordinator:
+  ros__parameters:
+    planning_frame: panda_link0
+    backend_planning_frame: world
+
+/**/system_health_monitor:
+  ros__parameters:
+    base_frame: panda_link0
+    end_effector_frame: panda_hand
+    gripper_action: /panda_gripper/gripper_cmd
+    required_joint_names:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
+      - panda_finger_joint1
+      - panda_finger_joint2
+    required_controllers:
+      - joint_state_broadcaster
+      - panda_arm_controller
+      - panda_hand_controller
+
+/**/franka_moveit_servo_task_server:
+  ros__parameters:
+    # Servo tracks the grasp TCP while commanding the panda_arm chain tip.
+    servo_to_pose.planning_frame: panda_link0
+    servo_to_pose.task_frame: panda_grasp_frame
+    servo_to_pose.servo_tip_frame: panda_link8
+    servo_to_pose.joint_names:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
+    servo_to_pose.arm_resource_id: arm/main
+
+/**/franka_transfer_object_sequence_server:
+  ros__parameters:
+    robot.planning_frame: panda_link0
+    robot.planning_group: panda_arm
+    robot.end_effector_link: panda_grasp_frame
+    robot.attachment_link: panda_hand
+    robot.touch_links: [panda_hand, panda_leftfinger, panda_rightfinger]
+    robot.open_width_m: 0.08
+    robot.allow_grasp_stall: true
+    robot.home_joint_names:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
+    robot.home_joint_positions: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+    robot.gripper_action: /panda_gripper/gripper_cmd
+
+/**/franka_moveit_sequence_node:
+  ros__parameters:
+    planning_group: panda_arm
+    reference_frame: panda_link0

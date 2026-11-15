@@ -1,0 +1,11 @@
+# Responsibility: Override trajectory-execution tolerances for Isaac Sim scheduling.
+# This node-scoped profile is loaded after moveit_controllers.yaml.
+# The relaxed margins account for simulator scheduling; controller identity and
+# joint ownership continue to come from the canonical controller config.
+move_group:
+  ros__parameters:
+    trajectory_execution:
+      allowed_start_tolerance: 0.05
+      allowed_execution_duration_scaling: 2.5
+      allowed_goal_duration_margin: 2.0
+      execution_duration_monitoring: true

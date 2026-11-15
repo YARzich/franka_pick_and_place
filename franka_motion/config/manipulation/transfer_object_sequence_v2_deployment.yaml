@@ -1,0 +1,17 @@
+# Responsibility: Bind the V2 Franka composition root to deployed ROS endpoints.
+# Does not own: task policy, provider sampling, backend planning policy, or simulation clock.
+/**/franka_transfer_object_sequence_server:
+  ros__parameters:
+    endpoints.sequence_action: /transfer_object_sequence_v2
+    endpoints.sequence_pause_service: /set_transfer_object_sequence_v2_paused
+    endpoints.detected_pose_topic: /table_stereo/cube_pose
+    endpoints.health_topic: /system_health_monitor/health
+    endpoints.scene_acquire_service: /planning_scene_coordinator/acquire_lease
+    endpoints.scene_renew_service: /planning_scene_coordinator/renew_lease
+    endpoints.scene_validate_service: /planning_scene_coordinator/validate_lease
+    endpoints.scene_state_service: /planning_scene_coordinator/get_state
+    endpoints.scene_apply_service: /planning_scene_coordinator/apply_scene_diff
+    endpoints.scene_release_service: /planning_scene_coordinator/release_lease
+    endpoints.planning_scene_read_service: /get_planning_scene
+    # Empty outside Isaac: Gazebo/hardware use only the coordinated PlanningScene path.
+    endpoints.physical_attachment_service: ""

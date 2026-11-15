@@ -1,0 +1,13 @@
+{
+	"nodes":[
+		{"id":"n_back","type":"text","x":-1520,"y":-620,"width":420,"height":70,"text":"← [[Карта системы.canvas|К карте системы]]"},
+		{"id":"n_text","type":"text","x":-1520,"y":-500,"width":640,"height":520,"text":"# Общий словарь\n\nПакет `manipulation_msgs` — **язык системы**, а не работающая программа. Он ничего не делает и не запускается: в нём лежат определения типов — как выглядит заказ на перенос, правка сцены, отчёт о готовности.\n\nЗачем отдельный пакет: блоки зависят от словаря, а не друг от друга. Поэтому детектор, планировщик или робота можно заменить — язык общения остаётся прежним.\n\nКаждая стрелка с пометкой **action** или **service** на карте и слоях описана именно здесь. Топики восприятия (картинки, облака, позы) говорят на стандартных словарях ROS — свой словарь нужен только для задач, сцены и готовности."},
+		{"id":"n_d1","type":"text","x":-760,"y":-460,"width":400,"height":160,"color":"5","text":"**Заказ переноса**\n_цель, ход, итог, отмена_\n⚙️ action · `TransferObjectSequenceV2`"},
+		{"id":"n_d2","type":"text","x":-280,"y":-460,"width":400,"height":160,"color":"5","text":"**Подруливание**\n_реактивный подвод к позе (Servo)_\n⚙️ action · `ServoToPose`"},
+		{"id":"n_d3","type":"text","x":-760,"y":-240,"width":400,"height":160,"color":"5","text":"**Сцена: аренда и правки**\n_кто пишет, что менять, сверка_\n⚙️ services · lease / diff / reconcile"},
+		{"id":"n_d4","type":"text","x":-280,"y":-240,"width":400,"height":160,"color":"5","text":"**Готовность системы**\n_сводный вердикт и его части_\n⚙️ topic + service · `SystemHealthSnapshot`"},
+		{"id":"n_d5","type":"text","x":-760,"y":-20,"width":400,"height":160,"color":"5","text":"**Состояния и итоги задач**\n_единые статусы для отчётов_\n⚙️ messages · TaskState / TaskResult"},
+		{"id":"n_names","type":"text","x":-1520,"y":100,"width":640,"height":220,"text":"🔧 **Настоящие имена:** actions `TransferObjectSequenceV2`, `ServoToPose` · services `AcquirePlanningSceneLease`, `RenewPlanningSceneLease`, `ReleasePlanningSceneLease`, `ValidatePlanningSceneLease`, `ApplyPlanningSceneDiff`, `GetPlanningSceneState`, `ReconcilePlanningScene`, `GetSystemHealth`, `SetTaskPaused` · messages `SystemHealthSnapshot`, `HealthComponentStatus`, `ManipulationTaskState/Result`, `MotionTaskResult`, `TransferObjectStepV2`, `PlanningSceneCoordinatorState`, `PlanningSceneOperationResult`"}
+	],
+	"edges":[]
+}

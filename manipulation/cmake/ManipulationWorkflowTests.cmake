@@ -1,0 +1,86 @@
+# Responsibility: Register backend-neutral workflow and V2 action-server tests.
+# Does not own: Concrete planner adapters, scene-coordinator, or monitoring tests.
+
+include_guard(GLOBAL)
+
+ament_add_gtest(test_skill_runtime test/workflow/test_skill_runtime.cpp)
+target_link_libraries(test_skill_runtime manipulation_workflow)
+
+ament_add_gtest(test_task_message_adapter test/workflow/test_task_message_adapter.cpp)
+target_link_libraries(test_task_message_adapter manipulation_workflow)
+
+ament_add_gtest(test_single_goal_task_worker test/workflow/test_single_goal_task_worker.cpp)
+target_link_libraries(test_single_goal_task_worker manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_session
+  test/workflow/test_transfer_sequence_session.cpp
+  test/workflow/test_transfer_sequence_session_operation_races.cpp
+)
+target_link_libraries(test_transfer_sequence_session manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_goal_transport
+  test/workflow/test_transfer_sequence_goal_transport.cpp
+)
+target_include_directories(test_transfer_sequence_goal_transport PRIVATE src/workflow)
+target_link_libraries(test_transfer_sequence_goal_transport manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_action_core_control
+  test/workflow/test_transfer_sequence_action_core_control.cpp
+)
+target_include_directories(test_transfer_sequence_action_core_control PRIVATE src/workflow)
+target_link_libraries(test_transfer_sequence_action_core_control manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_action_core_lifetime
+  test/workflow/test_transfer_sequence_action_core_lifetime.cpp
+)
+target_include_directories(test_transfer_sequence_action_core_lifetime PRIVATE src/workflow)
+target_link_libraries(test_transfer_sequence_action_core_lifetime manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_execution_policy
+  test/workflow/test_transfer_sequence_execution_policy.cpp
+)
+target_include_directories(
+  test_transfer_sequence_execution_policy PRIVATE src/workflow)
+target_link_libraries(
+  test_transfer_sequence_execution_policy manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_goal_reservation
+  test/workflow/test_transfer_sequence_goal_reservation.cpp
+)
+target_link_libraries(
+  test_transfer_sequence_goal_reservation manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_sequence_action_core_shared_reservation
+  test/workflow/test_transfer_sequence_action_core_shared_reservation.cpp
+)
+target_include_directories(
+  test_transfer_sequence_action_core_shared_reservation PRIVATE src/workflow)
+target_link_libraries(
+  test_transfer_sequence_action_core_shared_reservation manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_object_sequence_v2_goal_validation
+  test/workflow/test_transfer_object_sequence_v2_goal_validation.cpp
+)
+target_link_libraries(
+  test_transfer_object_sequence_v2_goal_validation manipulation_workflow)
+
+ament_add_gtest(
+  test_transfer_object_sequence_v2_action_server
+  test/workflow/test_transfer_object_sequence_v2_action_server.cpp
+)
+target_link_libraries(
+  test_transfer_object_sequence_v2_action_server manipulation_workflow)
+
+ament_add_gtest(
+  test_scene_lease_release_policy
+  test/workflow/test_scene_lease_release_policy.cpp
+)
+target_link_libraries(test_scene_lease_release_policy manipulation_workflow)

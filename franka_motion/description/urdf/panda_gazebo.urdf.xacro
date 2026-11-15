@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Assemble Panda geometry, world anchoring, and split arm/hand
+     control for Gazebo. -->
+<robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!--
+      Gazebo assembly of the canonical Panda geometry and ros2_control contract.
+      world -> panda_link0 is fixed at the configured REP-103 pose. Arm and hand
+      use separate Gazebo systems so each joint interface has exactly one owner.
+    -->
+    <xacro:arg name="initial_positions_file" default="$(find franka_motion)/config/control/initial_positions.yaml" />
+    <xacro:arg name="ros2_control_config" default="$(find franka_motion)/config/control/panda_ros2_control_base.yaml" />
+    <xacro:arg name="ros2_hand_control_type" default="gz" />
+    <xacro:arg name="base_x" default="0.0" />
+    <xacro:arg name="base_y" default="0.0" />
+    <xacro:arg name="base_z" default="1.0" />
+    <xacro:arg name="base_roll" default="0.0" />
+    <xacro:arg name="base_pitch" default="0.0" />
+    <xacro:arg name="base_yaw" default="0.0" />
+    <!-- Both finger joints are explicit because ros2_control owns their state. -->
+    <xacro:include filename="$(find franka_motion)/description/urdf/panda_nomimic.urdf.xacro" />
+    <xacro:include filename="$(find franka_motion)/description/ros2_control/panda.ros2_control.xacro" />
+    <xacro:include filename="$(find franka_motion)/description/ros2_control/panda_hand.ros2_control.xacro" />
+
+    <link name="world" />
+    <joint name="panda_world_joint" type="fixed">
+        <parent link="world" />
+        <child link="panda_link0" />
+        <origin xyz="$(arg base_x) $(arg base_y) $(arg base_z)" rpy="$(arg base_roll) $(arg base_pitch) $(arg base_yaw)" />
+    </joint>
+
+    <xacro:panda_ros2_control
+        name="PandaGazeboSystem"
+        hardware_plugin="gz_ros2_control/GazeboSimSystem"
+        initial_positions_file="$(arg initial_positions_file)"
+        command_topic="/isaac_joint_commands"
+        joint_state_topic="/isaac_joint_states" />
+
+    <xacro:panda_hand_ros2_control
+        name="PandaHandGazeboSystem"
+        ros2_control_hardware_type="$(arg ros2_hand_control_type)"
+        command_topic="/isaac_joint_commands"
+        joint_state_topic="/isaac_joint_states"
+        initial_position="0.035" />
+
+    <!-- One manager plugin loads both systems from the shared controller YAML. -->
+    <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+            <parameters>$(arg ros2_control_config)</parameters>
+        </plugin>
+    </gazebo>
+
+</robot>

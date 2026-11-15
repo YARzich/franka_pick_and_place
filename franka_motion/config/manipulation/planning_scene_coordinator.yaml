@@ -1,0 +1,27 @@
+# Responsibility: Configure authoritative PlanningScene services, leases, and
+# recovery bounds.
+# Does not own: Panda planning/model-frame bindings; robot_profile.yaml owns them.
+planning_scene_coordinator:
+  ros__parameters:
+    use_sim_time: false
+
+    # Authoritative MoveIt writer/readback pair used around every mutation.
+    backend_service: /apply_planning_scene
+    readback_service: /get_planning_scene
+    # This project has a fixed URDF root and intentionally no SRDF virtual joint.
+    robot_description_topic: /robot_description
+    verify_fixed_root_model_frame: true
+    backend_service_timeout_sec: 5.0
+    readback_service_timeout_sec: 5.0
+
+    # Wall/steady-clock maintenance; intentionally independent of /clock.
+    lease_expiry_check_period_sec: 0.5
+    reconciliation_check_period_sec: 1.0
+
+    # Normally left empty so every process lifetime gets a fresh UUID.
+    session_id: ""
+    initial_revision: 0
+    max_operation_records: 4096
+
+    diagnostic_updater:
+      period: 1.0

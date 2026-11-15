@@ -1,0 +1,25 @@
+# Responsibility: Configure MTC sampling and physical grasp values independently of task policy.
+schema_version: 1
+provider_id: mtc
+
+grasp_profiles:
+  panda_top_down_cube:
+    arm_group: panda_arm
+    eef: hand
+    ik_frame_link: panda_hand
+    pregrasp_named_pose: open
+    grasp_named_pose: close
+    ik_frame:
+      offset_xyz: [0.0, 0.0, 0.1034]
+      orientation_xyzw: [1.0, 0.0, 0.0, 0.0]
+    rotation_axis_xyz: [0.0, 0.0, 1.0]
+    approach_direction_xyz: [0.0, 0.0, -1.0]
+    angle_delta_rad: 0.5235987755982988
+    min_solution_distance: 0.2
+    max_ik_solutions: 16
+    max_solutions: 8
+    pregrasp_distance_m: 0.1
+    # The canonical simulator adapter is position-only: command full closure,
+    # accept contact stall as grasp evidence, and request no effort constraint.
+    gripper_opening_m: 0.0
+    gripper_force_n: 0.0

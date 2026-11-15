@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+"""Entrypoint for exact role-marked process-death validation controls."""
+
+from franka_motion_runtime.validation.runtime_process_fault import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

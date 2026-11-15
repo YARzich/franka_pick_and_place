@@ -1,0 +1,15 @@
+# Responsibility: Preserve the observed dataset composition with explicit dataset-root placeholders.
+path: ${DATASETS_ROOT}/cube_hybrid_lighting_v3
+train:
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1/images/train
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1_photometric_v3/images/train
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v3_lighting/images/train
+- ${DATASETS_ROOT}/cube_gazebo_screenshots_yolo_seg_v1/images/train
+- ${DATASETS_ROOT}/cube_gazebo_real_composite_seg_v3/images/train
+val:
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1/images/val
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1_photometric_v3/images/val
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v3_lighting/images/val
+- ${DATASETS_ROOT}/cube_gazebo_screenshots_yolo_seg_v1/images/val
+names:
+  0: cube

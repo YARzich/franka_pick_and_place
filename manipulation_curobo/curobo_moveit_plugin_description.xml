@@ -1,0 +1,10 @@
+<!-- Responsibility: Register the cuRobo PlannerManager implementation with
+     MoveIt's plugin loader. -->
+<library path="curobo_moveit_plugin">
+  <class
+    name="manipulation_curobo/CuRoboPlanner"
+    type="manipulation_curobo::CuRoboPlannerManager"
+    base_class_type="planning_interface::PlannerManager">
+    <description>cuRobo MotionGen planner bridge for MoveIt.</description>
+  </class>
+</library>

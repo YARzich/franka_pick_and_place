@@ -1,0 +1,21 @@
+# Responsibility: Configure the optional cuRobo PlannerManager pipeline for Panda.
+# Does not own: task lifecycle, execution, gripper control, or PlanningScene state.
+planning_plugins:
+  - manipulation_curobo/CuRoboPlanner
+
+request_adapters:
+  - default_planning_request_adapters/ResolveConstraintFrames
+  - default_planning_request_adapters/ValidateWorkspaceBounds
+  - default_planning_request_adapters/CheckStartStateBounds
+  - default_planning_request_adapters/CheckStartStateCollision
+
+response_adapters:
+  - default_planning_response_adapters/AddTimeOptimalParameterization
+  - default_planning_response_adapters/ValidateSolution
+  - default_planning_response_adapters/DisplayMotionPath
+
+start_state_max_bounds_error: 0.05
+python_executable: python3
+motion_gen_config: package://franka_motion/config/curobo/panda_curobo_motion_gen.yaml
+ee_link: panda_hand
+max_concurrent_plans: 1

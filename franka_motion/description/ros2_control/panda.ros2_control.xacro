@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Define backend-parameterized ros2_control resources for
+     the seven-joint Panda arm. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!--
+      Arm ros2_control contract shared by simulator and mock backends.
+      include_hand is true only when one hardware component owns the complete
+      Isaac joint vector; otherwise the hand macro owns the finger resources.
+      command_topic and joint_state_topic are consumed only by the topic backend.
+    -->
+    <xacro:macro name="panda_ros2_control" params="name hardware_plugin initial_positions_file command_topic joint_state_topic include_hand:=false">
+        <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+
+        <ros2_control name="${name}" type="system">
+            <hardware>
+                <plugin>${hardware_plugin}</plugin>
+                <xacro:if value="${hardware_plugin == 'mock_components/GenericSystem'}">
+                    <param name="fake_sensor_commands">false</param>
+                    <param name="fake_gpio_commands">false</param>
+                    <param name="command_propagation_disabled">false</param>
+                </xacro:if>
+                <xacro:if value="${hardware_plugin == 'topic_based_ros2_control/TopicBasedSystem'}">
+                    <param name="joint_commands_topic">${command_topic}</param>
+                    <param name="joint_states_topic">${joint_state_topic}</param>
+                </xacro:if>
+            </hardware>
+            <joint name="panda_joint1">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint1']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint2">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint2']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint3">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint3']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint4">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint4']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint5">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint5']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint6">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint6']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_joint7">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['panda_joint7']}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                  <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <xacro:if value="${include_hand}">
+                <joint name="panda_finger_joint1">
+                    <command_interface name="position" />
+                    <state_interface name="position">
+                      <param name="initial_value">0.0</param>
+                    </state_interface>
+                    <state_interface name="velocity">
+                        <param name="initial_value">0.0</param>
+                    </state_interface>
+                </joint>
+                <joint name="panda_finger_joint2">
+                    <command_interface name="position" />
+                    <state_interface name="position">
+                      <param name="initial_value">0.0</param>
+                    </state_interface>
+                    <state_interface name="velocity">
+                        <param name="initial_value">0.0</param>
+                    </state_interface>
+                </joint>
+            </xacro:if>
+        </ros2_control>
+    </xacro:macro>
+</robot>

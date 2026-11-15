@@ -1,0 +1,117 @@
+{
+  "package": "franka_motion",
+  "executables": [
+    "franka_moveit_sequence",
+    "franka_transfer_sequence_v2_server",
+    "franka_transfer_sequence_client",
+    "franka_transfer_sequence_active_cancel_probe",
+    "franka_runtime_harness",
+    "panda_gripper_driver",
+    "static_table_scene",
+    "stereo_sgbm_pointcloud_node.py",
+    "disparity_frame_fix_node.py",
+    "yolo_visualizer_node.py",
+    "megapose_detection_node.py",
+    "megapose_worker.py",
+    "gigapose_worker.py",
+    "gigapose_refiner_worker.py",
+    "foundationpose_depth_clean_node.py",
+    "foundationpose_input_frame_fix_node.py",
+    "foundationpose_detection_to_pose_node.py",
+    "managed_process_wrapper.py",
+    "ros_gz_bridge_wrapper.py"
+  ],
+  "launch_files": [
+    "franka_detected_cube_round_trip.launch.py",
+    "franka_gazebo_active_cancel.launch.py",
+    "franka_gazebo_moveit.launch.py",
+    "franka_gazebo_move_cube.launch.py",
+    "franka_gazebo_move_cube_round_trip.launch.py",
+    "franka_gazebo_moveit_table.launch.py",
+    "franka_gazebo_moveit_table_camera.launch.py",
+    "franka_isaac_move_cube.launch.py",
+    "franka_isaac_move_cube_round_trip.launch.py",
+    "franka_isaac_moveit.launch.py",
+    "franka_isaac_moveit_table.launch.py",
+    "franka_isaac_moveit_table_camera.launch.py",
+    "franka_motion_bringup.launch.py"
+  ],
+  "resource_directories": [
+    "config",
+    "description",
+    "models",
+    "worlds"
+  ],
+  "robot_profile": {
+    "path": "config/manipulation/robot_profile.yaml",
+    "classification": "single_robot_binding_source",
+    "consumers": [
+      "planning_scene_coordinator",
+      "system_health_monitor",
+      "franka_moveit_servo_task_server",
+      "franka_transfer_object_sequence_server",
+      "franka_moveit_sequence_node"
+    ]
+  },
+  "moveit_sequence_diagnostic": {
+    "public_executable": "franka_moveit_sequence",
+    "node_name": "franka_moveit_sequence_node",
+    "classification": "low_level_moveit_diagnostic",
+    "owns_task_workflow": false,
+    "stages": [
+      "target_pose_1",
+      "target_pose_2",
+      "initial_joint_state"
+    ],
+    "parameters": [
+      "planning_group",
+      "reference_frame",
+      "planning_time",
+      "velocity_scaling",
+      "acceleration_scaling",
+      "current_state_timeout_sec",
+      "joint_state_max_age"
+    ]
+  },
+  "static_table_scene_routing": {
+    "public_executable": "static_table_scene",
+    "parameter": "use_scene_coordinator",
+    "default": true,
+    "coordinator_target": {
+      "package": "franka_motion",
+      "executable": "static_table_scene_coordinated",
+      "install_directory": "libexec/franka_motion"
+    }
+  },
+  "transfer_sequence_v2": {
+    "server_executable": "franka_transfer_sequence_v2_server",
+    "public_client_executable": "franka_transfer_sequence_client",
+    "implementation": "scripts/tasks/franka_transfer_sequence_client",
+    "action_type": "manipulation_msgs/action/TransferObjectSequenceV2",
+    "sequence_action": "/transfer_object_sequence_v2",
+    "pause_service": "/set_transfer_object_sequence_v2_paused",
+    "consumer_paths": [
+      "configured",
+      "detected"
+    ],
+    "client_owned_step_fields": [
+      "object_id",
+      "target_mode",
+      "target_object_pose",
+      "target_translation",
+      "return_home",
+      "recovery_policy"
+    ],
+    "forbidden_goal_fields": [
+      "geometry",
+      "source_object_pose",
+      "grasp_pose",
+      "object_profile_id",
+      "observation_provider_id",
+      "grasp_provider_id",
+      "strategy_id",
+      "planner_backend_id",
+      "whole_goal_timeout"
+    ]
+  }
+}

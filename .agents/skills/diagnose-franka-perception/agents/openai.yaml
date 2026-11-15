@@ -1,0 +1,7 @@
+# Responsibility: Describe the Franka perception diagnosis skill in agent UIs.
+interface:
+  display_name: "Diagnose Franka Perception"
+  short_description: "Диагностика stereo и оценки позы Franka"
+  default_prompt: "Используй $diagnose-franka-perception, найди первый сломанный этап camera-to-pose pipeline и кратко объясни причину."
+policy:
+  allow_implicit_invocation: true

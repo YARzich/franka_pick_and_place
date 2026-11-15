@@ -1,0 +1,55 @@
+# Responsibility: Define the versioned high-level object-transfer workflow contract.
+#
+# The server validates the complete non-empty intent before the first side
+# effect, resolves server-owned observations and grasps, and executes steps in
+# order through its configured strategy. The goal deliberately has no overall
+# timeout: non-physical waits end only on success, typed terminal failure,
+# cancellation, or shutdown. Physical command bounds are server-side policy.
+
+TransferObjectStepV2[] steps
+---
+# Aggregate terminal result. success is true only when every requested step
+# postcondition was confirmed.
+ManipulationTaskResult result
+
+# Length of the strictly successful prefix. The terminal failed/canceled step,
+# when one started, is included in step_results but not in this count.
+uint32 completed_step_count
+
+int64 NO_FAILED_STEP=-1
+
+# Zero-based input step that failed or was canceled. NO_FAILED_STEP also covers
+# rejection before any individual step starts and complete success.
+int64 failed_step_index
+
+# Terminal results for steps that actually started, in input order. Entries for
+# later, unstarted steps are never synthesized.
+ManipulationTaskResult[] step_results
+---
+# Zero-based active input step and immutable input sequence size. Before a step
+# becomes active, sequence_step_index is zero and active_object_id is empty.
+uint32 sequence_step_index
+uint32 sequence_step_count
+
+# Monotonic complete-goal progress in [0.0, 1.0].
+float32 overall_progress
+
+# Exact object ID for the active step. Empty only when no step is active.
+string active_object_id
+
+# Standard typed lifecycle phase, progress, pause state, and steady elapsed time.
+ManipulationTaskState current_state
+
+uint8 WAITING_NONE=0
+uint8 WAITING_OBSERVATION=1
+uint8 WAITING_TRANSFORM=2
+uint8 WAITING_GRASP_GENERATION=3
+uint8 WAITING_SCENE_READINESS=4
+uint8 WAITING_HEALTH_READINESS=5
+uint8 WAITING_PLANNING=6
+uint8 WAITING_ROS_ENDPOINT=7
+
+# Machine-readable refinement of current_state.phase while the workflow waits.
+# WAITING_NONE is required outside a wait. Values are append-only; clients must
+# tolerate unknown future values and must not parse current_state.detail.
+uint8 waiting_reason

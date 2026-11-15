@@ -1,0 +1,4 @@
+# Responsibility: Define controller types, joints, and constraints shared by simulators.
+controller_manager:
+  ros__parameters:
+    update_rate: 100

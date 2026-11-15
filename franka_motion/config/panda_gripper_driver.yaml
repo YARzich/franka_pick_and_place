@@ -1,0 +1,17 @@
+# Responsibility: Preserve the legacy path for canonical gripper adapter parameters.
+# Compatibility mirror of config/control/panda_gripper_driver.yaml.
+# New launch code should resolve the canonical package path directly.
+panda_gripper_driver:
+  ros__parameters:
+    command_topic: /panda_hand_controller/commands
+    action_name: /panda_gripper/gripper_cmd
+    joint_states_topic: /joint_states
+    goal_tolerance: 0.004
+    state_timeout_sec: 0.5
+    stall_timeout_sec: 0.5
+    stall_width_threshold: 0.0005
+    goal_timeout_sec: 3.0
+    action_monitor_rate: 20.0
+    allow_stalling: true
+    finger_symmetry_tolerance: 0.005
+    stall_finger_reverse_tolerance: 0.002

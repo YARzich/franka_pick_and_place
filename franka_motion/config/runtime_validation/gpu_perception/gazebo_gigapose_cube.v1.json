@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "contract_id": "franka-gazebo-gigapose-cube-v1",
+  "observation_timeout_sec": 300.0,
+  "minimum_observation_sec": 10.0,
+  "terminal_freshness_sec": 10.0,
+  "diagnostic_freshness_sec": 5.0,
+  "minimum_input_delta": 2,
+  "minimum_output_delta": 1,
+  "minimum_latency_samples": 1,
+  "topics": [
+    {
+      "role": "disparity",
+      "topic": "/table_stereo/disparity_fixed",
+      "message_type": "stereo_msgs/msg/DisparityImage",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": null,
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "pose_image",
+      "topic": "/table_stereo/foundationpose/image",
+      "message_type": "sensor_msgs/msg/Image",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": "data",
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "pose_camera_info",
+      "topic": "/table_stereo/foundationpose/camera_info",
+      "message_type": "sensor_msgs/msg/CameraInfo",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": null,
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "pose_depth",
+      "topic": "/table_stereo/foundationpose/depth_clean",
+      "message_type": "sensor_msgs/msg/Image",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": "data",
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "detection_2d",
+      "topic": "/table_stereo/cube_detection2d",
+      "message_type": "vision_msgs/msg/Detection2DArray",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": "detections",
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "segmentation",
+      "topic": "/table_stereo/foundationpose/segmentation",
+      "message_type": "sensor_msgs/msg/Image",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": "data",
+      "capture_payload_digest": false,
+      "maximum_rate_hz": 60.0
+    },
+    {
+      "role": "pose_hypotheses",
+      "topic": "/table_stereo/megapose/output",
+      "message_type": "vision_msgs/msg/Detection3DArray",
+      "frame_id": "table_stereo_left_optical_frame",
+      "nonempty_field": "detections",
+      "capture_payload_digest": true,
+      "maximum_rate_hz": 10.0
+    },
+    {
+      "role": "object_pose",
+      "topic": "/table_stereo/cube_pose",
+      "message_type": "geometry_msgs/msg/PoseStamped",
+      "frame_id": "world",
+      "nonempty_field": null,
+      "capture_payload_digest": true,
+      "maximum_rate_hz": 10.0
+    }
+  ],
+  "correlation_groups": [
+    {
+      "name": "stereo_to_world_pose",
+      "roles": [
+        "disparity",
+        "pose_image",
+        "pose_camera_info",
+        "pose_depth",
+        "detection_2d",
+        "segmentation",
+        "pose_hypotheses",
+        "object_pose"
+      ]
+    }
+  ],
+  "terminal_pose_role": "object_pose",
+  "diagnostics": [
+    {
+      "role": "stereo",
+      "status_name": "ess_depth_pointcloud: perception/stereo_depth_pointcloud",
+      "source_topic_role": "disparity"
+    },
+    {
+      "role": "detector",
+      "status_name": "yolo_visualizer: perception/yolo_detection",
+      "source_topic_role": "detection_2d"
+    },
+    {
+      "role": "pose_backend",
+      "status_name": "megapose_detection: perception/megapose_detection",
+      "source_topic_role": "pose_hypotheses"
+    },
+    {
+      "role": "pose_adapter",
+      "status_name": "megapose_detection_to_pose: perception/pose_estimation",
+      "source_topic_role": "object_pose"
+    }
+  ],
+  "assets": [
+    {"name": "ess_engine"},
+    {"name": "yolo_model"},
+    {"name": "gigapose_checkpoint"},
+    {"name": "megapose_coarse_checkpoint"},
+    {"name": "megapose_refiner_checkpoint"},
+    {"name": "cube_mesh"}
+  ],
+  "gpu_identity": {
+    "argv": [
+      "/usr/bin/nvidia-smi",
+      "--query-gpu=name,uuid,driver_version,memory.total",
+      "--format=csv,noheader,nounits"
+    ],
+    "fields": ["name", "uuid", "driver_version", "memory_total"],
+    "timeout_sec": 10.0
+  }
+}

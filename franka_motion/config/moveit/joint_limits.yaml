@@ -1,0 +1,73 @@
+# Responsibility: Apply conservative MoveIt motion limits and bounded shape-TF lookup.
+# Adapted from moveit_resources_panda_moveit_config (BSD-3-Clause).
+# Conservative MoveIt limits. Position and effort limits remain owned by URDF.
+# Revolute values use rad/s, rad/s^2 and rad/s^3; prismatic finger values use
+# the corresponding SI linear units.
+# MoveIt 2.12 waits only 0.05 s by default. A larger bounded wait lets its
+# independent TF buffer receive the same exact-stamp transforms admitted by
+# moveit_octomap_tf_gate before the robot self-filter runs.
+shape_transform_cache_lookup_wait_time: 0.5
+joint_limits:
+  panda_joint1:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: true
+    max_acceleration: 3.75
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint2:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: true
+    max_acceleration: 1.875
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint3:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: true
+    max_acceleration: 2.5
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint4:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: true
+    max_acceleration: 3.125
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint5:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: true
+    max_acceleration: 3.75
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint6:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_joint7:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_finger_joint1:
+    has_velocity_limits: true
+    max_velocity: 0.1
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+    has_jerk_limits: true
+    max_jerk: 300.0
+  panda_finger_joint2:
+    has_velocity_limits: true
+    max_velocity: 0.1
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+    has_jerk_limits: true
+    max_jerk: 300.0

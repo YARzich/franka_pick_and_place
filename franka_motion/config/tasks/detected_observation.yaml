@@ -1,0 +1,15 @@
+# Responsibility: Route the current correlated detector buffer into the V2 planning frame.
+schema_version: 1
+provider_id: detected
+object_id: cube
+target_frame: panda_link0
+# The cube physically rests on the table: its center never sits below 0.027 in
+# panda_link0 (tabletop collision top -0.002 + half cube 0.025 + the same 2 mm
+# clearance the configured preset keeps). Millimeter detector noise below that
+# bound would sink the semantic cube into the tabletop box and turn the legal
+# resting contact into a start-state collision for every attached-object plan.
+minimum_position_z_m: 0.027
+# Measurement age in ROS seconds, including GPU inference and exact-TF latency.
+# This bounds each sample, not how long an action may wait for a usable sample.
+# Future and replayed stamps are rejected; a ROS-clock rollback starts a new epoch.
+max_observation_age_sec: 5.0

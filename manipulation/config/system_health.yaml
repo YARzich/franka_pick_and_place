@@ -1,0 +1,52 @@
+# Responsibility: Configure neutral health probes, freshness limits, and fault injection.
+system_health_monitor:
+  ros__parameters:
+    use_sim_time: false
+    diagnostic_updater.period: 1.0
+    health_publish_period_sec: 1.0
+    service_request_timeout_sec: 2.0
+
+    startup_grace_sec: 10.0
+    joint_states_warn_after_sec: 0.5
+    joint_states_stale_after_sec: 2.0
+    clock_warn_after_sec: 0.5
+    clock_stale_after_sec: 2.0
+    controllers_warn_after_sec: 2.0
+    controllers_stale_after_sec: 5.0
+    planning_scene_warn_after_sec: 2.0
+    planning_scene_stale_after_sec: 5.0
+    planning_scene_operation_stuck_after_sec: 30.0
+    joint_stamp_tolerance_sec: 2.0
+
+    require_sim_clock: false
+    joint_states_topic: /joint_states
+    controller_manager_service: /controller_manager/list_controllers
+    planning_scene_state_service: /planning_scene_coordinator/get_state
+
+    # Empty robot/backend bindings intentionally fail readiness closed. A robot
+    # package supplies concrete frames, joints, controllers and action types.
+    motion_backend_action: ""
+    motion_backend_action_type: ""
+    gripper_action: ""
+    base_frame: ""
+    end_effector_frame: ""
+
+    # Pipeline task names, component IDs, diagnostic status names and required
+    # tasks are intentionally omitted. Robot profiles bind matching arrays.
+    perception_diagnostics.topic: /diagnostics
+    perception_diagnostics.warn_after_sec: 2.0
+    perception_diagnostics.stale_after_sec: 5.0
+
+    fault_injection.force_joint_states_stale: false
+    fault_injection.force_clock_stale: false
+    fault_injection.force_controllers_unavailable: false
+    fault_injection.force_tf_unavailable: false
+    fault_injection.force_motion_backend_unavailable: false
+    fault_injection.force_gripper_unavailable: false
+    fault_injection.force_planning_scene_unavailable: false
+    fault_injection.force_planning_scene_backend_unavailable: false
+    fault_injection.force_planning_scene_backend_error: false
+    fault_injection.force_planning_scene_reconciliation_required: false
+    fault_injection.force_planning_scene_lease_expired: false
+    fault_injection.force_planning_scene_capacity_exhausted: false
+    fault_injection.force_perception_unavailable: false

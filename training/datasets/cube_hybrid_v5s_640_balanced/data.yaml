@@ -1,0 +1,22 @@
+# Responsibility: Preserve the observed dataset composition with explicit dataset-root placeholders.
+path: ${DATASETS_ROOT}/cube_hybrid_v5s_640_balanced
+train:
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1/images/train
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1_photometric_v3/images/train
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v3_lighting/images/train
+- ${DATASETS_ROOT}/cube_gazebo_screenshots_yolo_seg_v1/images/train
+- ${DATASETS_ROOT}/cube_problem_screenshots_seg_v4b_train/images/train
+- ${DATASETS_ROOT}/cube_problem_hard_aug_seg_v4b/images/train
+- ${DATASETS_ROOT}/cube_gazebo_screenshots_hard_aug_seg_v4/images/train
+- ${DATASETS_ROOT}/cube_synthetic_lighting_hard_aug_seg_v4/images/train
+- ${DATASETS_ROOT}/cube_problem2_screenshots_seg_v5s_train/images/train
+- ${DATASETS_ROOT}/cube_problem2_simple_aug_seg_v5s/images/train
+- ${DATASETS_ROOT}/cube_problem2_hard_aug_seg_v5s/images/train
+val:
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1/images/val
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v1_photometric_v3/images/val
+- ${DATASETS_ROOT}/cube_synthetic_yolo_seg_v3_lighting/images/val
+- ${DATASETS_ROOT}/cube_gazebo_screenshots_yolo_seg_v1/images/val
+- ${DATASETS_ROOT}/cube_test_screenshots_seg_v4/images/val
+names:
+  0: cube

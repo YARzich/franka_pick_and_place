@@ -1,0 +1,7 @@
+newmtl cube_blue
+Ka 0.2 0.6 0.8
+Kd 0.2 0.6 0.8
+Ks 0.0 0.0 0.0
+d 1.0
+illum 2
+map_Kd cube_5cm_texture.ppm

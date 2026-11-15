@@ -1,0 +1,22 @@
+# Responsibility: Feed the table-camera cloud into MoveIt's dynamic occupancy map.
+# The dedicated
+# cloud remains in the optical sensor frame so the updater can recover the
+# physical ray origin from TF; `/table_stereo/points` intentionally stays in
+# `world` for its existing visualization and perception contract.
+octomap_resolution: 0.015
+octomap_frame: world
+
+sensors:
+  - table_stereo_pointcloud
+
+table_stereo_pointcloud:
+  sensor_plugin: manipulation_moveit/FailClosedPointCloudOctomapUpdater
+  # The outer gate admits exact-stamp robot TF in its buffer; this updater then
+  # requires the complete active self-filter shape cache inside move_group.
+  point_cloud_topic: /table_stereo/moveit_octomap_points
+  max_range: 5.0
+  point_subsample: 1
+  padding_offset: 0.04
+  padding_scale: 1.0
+  max_update_rate: 2.0
+  filtered_cloud_topic: /table_stereo/octomap_filtered_points

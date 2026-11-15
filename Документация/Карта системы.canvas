@@ -1,0 +1,30 @@
+{
+	"nodes":[
+		{"id":"g_sys","type":"group","x":-1480,"y":-760,"width":1880,"height":1360,"label":"СИСТЕМА МАНИПУЛЯЦИИ — сам робот, которого объясняем"},
+		{"id":"n_stereo","type":"text","text":"**[[Стереозрение.canvas|Стереозрение]]**\n📦 `manipulation_perception` + Isaac ROS","x":-120,"y":-660,"width":340,"height":150,"color":"4"},
+		{"id":"n_task","type":"text","text":"**[[Задача переноса.canvas|Задача переноса]]**\n📦 `manipulation`","x":-1360,"y":-40,"width":340,"height":150,"color":"3"},
+		{"id":"n_ready","type":"text","text":"**[[Контроль готовности.canvas|Контроль готовности]]**\n📦 `manipulation`","x":-1360,"y":300,"width":340,"height":150,"color":"1"},
+		{"id":"n_msgs","type":"text","text":"**[[Общий словарь.canvas|Общий словарь]]**\n📦 `manipulation_msgs`\n_не узел: типы сообщений, на которых блоки разговаривают_","x":-800,"y":300,"width":400,"height":170,"color":"5"},
+		{"id":"n_text","type":"text","text":"# Оборот информации\n\nПо краям — два «чужих» мира: слева **пользователь** с его заказом, справа **симуляция**, заменяющая реальность. Всё в рамке между ними — сама система манипуляции.\n\nКруг такой: камера в симуляции снимает стол двумя «глазами» → **стереозрение** превращает пару кадров в глубину и облако точек → **распознавание** находит кубик и вычисляет его позу → **задача переноса** по заказу пользователя ведёт перенос по шагам → на каждый шаг **планирование** строит безопасную траекторию, сверяясь со **сценой** (память о препятствиях и о том, что в руке) → **исполнение** проигрывает траекторию на моторах → робот в симуляции двигается → камера видит результат.\n\n**Контроль готовности** держит допуск: пока не все части живы — движение не начнётся. **Общий словарь** в конвейере напрямую не участвует — это язык системы: все action и service на схемах описаны в нём. Служебные помощники пакета `manipulation` живут глубже — в «🧰 Ящике инструментов» внутри блока Задачи переноса.\n\nЦвета: зелёный — восприятие · фиолетовый — память о мире · жёлтый — дирижёр · оранжевый — движение · красный — контроль готовности · голубой — не участвует в конвейере напрямую.\n\n📖 Сценарий запуска, пакеты и словарик ROS-объектов: [[Начни отсюда]]","x":-4000,"y":-560,"width":760,"height":880},
+		{"id":"n_user","type":"text","text":"# 🧑 Пользователь\n\nЗапускает сценарий переноса и наблюдает ход и итог.\n\n_Не часть системы: внешний заказчик._","x":-2640,"y":-160,"width":440,"height":280},
+		{"id":"n_sim","type":"text","text":"# 🌍 [[Симуляция мира.canvas|Симуляция мира]]\n\nЗамена реальности: физика, стол с кубиком, моторы робота и стереокамера.\n\n_Не часть системы: с настоящим роботом этот блок заменяется железом._\n\n⚙️ Gazebo","x":560,"y":-540,"width":460,"height":320},
+		{"id":"n_scene","type":"text","text":"**[[Сцена планирования.canvas|Сцена планирования]]**\n📦 `manipulation`","x":-120,"y":-330,"width":340,"height":150,"color":"6"},
+		{"id":"n_recog","type":"text","text":"**[[Распознавание объекта.canvas|Распознавание объекта]]**\n📦 `manipulation_perception`","x":-970,"y":-660,"width":340,"height":150,"color":"4"},
+		{"id":"n_exec","type":"text","text":"**[[Исполнение движения.canvas|Исполнение движения]]**\n⚙️ ros2_control","x":-40,"y":-40,"width":340,"height":150,"color":"2"},
+		{"id":"n_plan","type":"text","text":"**[[Планирование движения.canvas|Планирование движения]]**\n📦 `manipulation_moveit` + MoveIt","x":-700,"y":-40,"width":340,"height":150,"color":"2"}
+	],
+	"edges":[
+		{"id":"e_sim_stereo","fromNode":"n_sim","fromSide":"left","toNode":"n_stereo","toSide":"right","label":"снимки двух глаз · topic"},
+		{"id":"e_stereo_recog","fromNode":"n_stereo","fromSide":"left","toNode":"n_recog","toSide":"right","label":"выровненные кадры и глубина · topic"},
+		{"id":"e_stereo_scene","fromNode":"n_stereo","fromSide":"bottom","toNode":"n_scene","toSide":"top","label":"облако точек · topic"},
+		{"id":"e_recog_task","fromNode":"n_recog","fromSide":"bottom","toNode":"n_task","toSide":"top","label":"поза объекта со временем · topic"},
+		{"id":"e_user_task","fromNode":"n_user","fromSide":"right","toNode":"n_task","toSide":"left","label":"заказ на перенос · action goal"},
+		{"id":"e_task_plan","fromNode":"n_task","fromSide":"right","toNode":"n_plan","toSide":"left","label":"цель очередного шага стратегии"},
+		{"id":"e_task_scene","fromNode":"n_task","fromSide":"top","toNode":"n_scene","toSide":"left","label":"правки сцены: взят / поставлен · service"},
+		{"id":"e_scene_plan","fromNode":"n_scene","fromSide":"bottom","toNode":"n_plan","toSide":"top","label":"карта препятствий и прикреплений"},
+		{"id":"e_plan_exec","fromNode":"n_plan","fromSide":"right","toNode":"n_exec","toSide":"left","label":"готовая траектория · action"},
+		{"id":"e_exec_sim","fromNode":"n_exec","fromSide":"right","toNode":"n_sim","toSide":"bottom","label":"команды моторам"},
+		{"id":"e_task_user","fromNode":"n_task","fromSide":"left","toNode":"n_user","toSide":"right","label":"ход и итог · action feedback / result"},
+		{"id":"e_ready_task","fromNode":"n_ready","fromSide":"top","toNode":"n_task","toSide":"bottom","label":"допуск к движению · topic"}
+	]
+}

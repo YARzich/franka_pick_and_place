@@ -1,0 +1,14 @@
+# Responsibility: Pin external pose-estimation repositories used to prepare backend environments.
+repositories:
+  third_party/dinov2:
+    type: git
+    url: https://github.com/facebookresearch/dinov2.git
+    version: ebc1cba1096de0a5388527817cf1e5d4d3896699
+  third_party/gigapose:
+    type: git
+    url: https://github.com/nv-nguyen/gigaPose.git
+    version: 17fcf97f493f79e56a215ab10ebff16d95cfe34b
+  third_party/megapose6d:
+    type: git
+    url: https://github.com/megapose6d/megapose6d.git
+    version: f3b8e1247f133f3d098833a251b8f2d744c03e1f

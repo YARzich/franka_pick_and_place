@@ -1,0 +1,20 @@
+# Responsibility: Tune request-owned cuRobo MotionGen planning for Panda.
+# Does not own: world geometry; the immutable PlanningScene request is authoritative.
+motion_gen:
+  robot_cfg: franka.yml
+  tensor_device: cuda:0
+  interpolation_dt: 0.01
+  trajopt_tsteps: 32
+  num_trajopt_seeds: 8
+  num_graph_seeds: 4
+  max_attempts: 2
+  collision_checker: mesh
+  use_cuda_graph: true
+  velocity_scale: 0.8
+  acceleration_scale: 0.8
+  workspace_frame: panda_link0
+  ee_link_name: panda_hand
+  attached_link_map:
+    panda_hand: attached_object
+  attached_touch_links:
+    panda_hand: [panda_hand, panda_leftfinger, panda_rightfinger]

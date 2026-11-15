@@ -1,0 +1,80 @@
+# Responsibility: Register fast unit, wiring, and generic-boundary tests explicitly.
+set(manipulation_perception_pytests
+  test/test_config_validation.py
+  test/test_detection_candidate.py
+  test/test_generic_boundary.py
+  test/test_gpu_perception_artifact_and_provenance.py
+  test/test_gpu_perception_diagnostic_evidence.py
+  test/test_gpu_perception_evidence.py
+  test/test_gpu_perception_evidence_contract.py
+  test/test_gpu_perception_probe_wiring.py
+  test/test_perception_bbox_helpers.py
+  test/test_perception_depth_geometry.py
+  test/test_perception_frame_adapters.py
+  test/test_perception_gigapose_refiner_models.py
+  test/test_perception_gigapose_refiner_worker_entrypoint.py
+  test/test_perception_gigapose_refiner_worker_inputs.py
+  test/test_perception_gigapose_refiner_worker_outputs.py
+  test/test_perception_gigapose_refiner_worker_runtime.py
+  test/test_perception_gigapose_worker_entrypoint.py
+  test/test_perception_gigapose_worker_inputs.py
+  test/test_perception_gigapose_worker_outputs.py
+  test/test_perception_gigapose_worker_runtime.py
+  test/test_perception_header_sync.py
+  test/test_perception_megapose_detection_node_lifecycle.py
+  test/test_perception_megapose_worker_entrypoint.py
+  test/test_perception_megapose_worker_inputs.py
+  test/test_perception_megapose_worker_outputs.py
+  test/test_perception_megapose_worker_runtime.py
+  test/test_perception_mesh_utils.py
+  test/test_perception_pipeline_diagnostics.py
+  test/test_perception_pipeline_metrics.py
+  test/test_perception_gigapose_backend.py
+  test/test_perception_megapose_backend.py
+  test/test_perception_pose_backend_factory.py
+  test/test_perception_pose_detection_messages.py
+  test/test_perception_pose_estimation_io.py
+  test/test_perception_pose_inference_gate.py
+  test/test_perception_pose_input_buffer.py
+  test/test_perception_pose_input_coordinator.py
+  test/test_perception_pose_input_state.py
+  test/test_perception_pose_node_parameters.py
+  test/test_perception_pose_output_adapter.py
+  test/test_perception_pose_output_publisher.py
+  test/test_perception_pose_runtime_environment.py
+  test/test_perception_pose_runtime_files.py
+  test/test_perception_pose_snapshot_decode.py
+  test/test_perception_pose_stamped_input_cache.py
+  test/test_perception_pose_wiring.py
+  test/test_perception_pose_worker_client_lifecycle.py
+  test/test_perception_pose_worker_client_protocol.py
+  test/test_perception_pose_worker_client_timeouts.py
+  test/test_perception_pose_worker_requests.py
+  test/test_perception_ros_shutdown.py
+  test/test_perception_stereo_cloud_pipeline.py
+  test/test_perception_stereo_disparity.py
+  test/test_perception_stereo_config_and_tf.py
+  test/test_perception_tf_clock.py
+  test/test_perception_stereo_geometry_helpers.py
+  test/test_perception_stereo_pending_depth.py
+  test/test_perception_stereo_ros_outputs.py
+  test/test_perception_stereo_sample_geometry.py
+  test/test_perception_stereo_sensor_cloud.py
+  test/test_perception_stereo_table_plane_pipeline.py
+  test/test_perception_stereo_wiring.py
+  test/test_perception_worker_protocol.py
+  test/test_perception_yolo_debug_rendering.py
+  test/test_perception_yolo_detector.py
+  test/test_perception_yolo_model_runtime.py
+  test/test_perception_yolo_node_parameters.py
+  test/test_perception_yolo_outputs.py
+  test/test_perception_yolo_postprocess.py
+  test/test_perception_yolo_runtime_controller.py
+  test/test_perception_yolo_runtime_controls.py
+  test/test_perception_yolo_wiring.py
+)
+
+foreach(test_file IN LISTS manipulation_perception_pytests)
+  get_filename_component(test_name "${test_file}" NAME_WE)
+  ament_add_pytest_test("${test_name}" "${test_file}")
+endforeach()

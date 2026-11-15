@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Expose the geometry-only Panda robot_description consumed
+     by MoveIt configuration. -->
+<!--
+  Geometry-only MoveIt model. Simulator-specific ros2_control systems belong
+  to backend packages; bringup replaces robot_description with their xacro.
+-->
+<robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include
+    filename="$(find franka_motion)/description/urdf/panda_nomimic.urdf.xacro"/>
+</robot>

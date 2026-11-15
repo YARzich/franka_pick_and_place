@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Define ros2_control resources and interfaces for the
+     independently actuated Panda fingers. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!--
+      Independent two-finger ros2_control system for Gazebo, mock hardware or
+      split Isaac configurations. Finger position and initial_position are
+      per-finger prismatic displacements in metres; both joints remain
+      independently commanded.
+    -->
+    <xacro:macro name="panda_hand_ros2_control" params="name ros2_control_hardware_type command_topic joint_state_topic initial_position:=0.0">
+        <ros2_control name="${name}" type="system">
+            <hardware>
+                <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+                    <plugin>mock_components/GenericSystem</plugin>
+                </xacro:if>
+                <xacro:if value="${ros2_control_hardware_type == 'isaac'}">
+                    <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
+                    <param name="joint_commands_topic">${command_topic}</param>
+                    <param name="joint_states_topic">${joint_state_topic}</param>
+                </xacro:if>
+                <xacro:if value="${ros2_control_hardware_type == 'gz'}">
+                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                </xacro:if>
+            </hardware>
+            <joint name="panda_finger_joint1">
+                <command_interface name="position" />
+                <state_interface name="position">
+                  <param name="initial_value">${initial_position}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                    <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+            <joint name="panda_finger_joint2">
+                <command_interface name="position" />
+                <state_interface name="position">
+                  <param name="initial_value">${initial_position}</param>
+                </state_interface>
+                <state_interface name="velocity">
+                    <param name="initial_value">0.0</param>
+                </state_interface>
+            </joint>
+        </ros2_control>
+    </xacro:macro>
+
+</robot>

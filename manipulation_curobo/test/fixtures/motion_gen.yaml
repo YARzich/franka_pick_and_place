@@ -1,0 +1,15 @@
+# Responsibility: Provide robot-neutral values for CPU-only bridge parsing tests.
+motion_gen:
+  robot_cfg: example_robot.yml
+  tensor_device: cpu
+  interpolation_dt: 0.01
+  max_attempts: 2
+  collision_checker: mesh
+  velocity_scale: 0.8
+  acceleration_scale: 0.8
+  workspace_frame: base_link
+  ee_link_name: tool0
+  attached_link_map:
+    tool0: attached_object
+  attached_touch_links:
+    tool0: [tool0, left_finger, right_finger]

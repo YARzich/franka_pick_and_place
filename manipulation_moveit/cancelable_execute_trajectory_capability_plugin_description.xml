@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Register the exact-cancel ExecuteTrajectory MoveGroup capability. -->
+<library path="manipulation_moveit_cancelable_execute_trajectory_capability">
+  <class
+    name="manipulation_moveit/CancelableExecuteTrajectoryCapability"
+    type="manipulation::moveit::CancelableExecuteTrajectoryCapability"
+    base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Executes one trajectory at a time with responsive exact-goal cancellation and owned stop/join.
+    </description>
+  </class>
+</library>

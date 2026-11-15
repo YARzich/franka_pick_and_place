@@ -1,0 +1,12 @@
+# Responsibility: Disable MoveIt occupancy updates for scenarios without a 3D sensor.
+# Stock MoveIt on ROS 2 Jazzy always constructs its occupancy-map monitor.
+# A plugin name beginning with "~" is the middleware's explicit skip sentinel;
+# it keeps sensor-free scenes quiet without hiding genuine MoveIt errors.
+octomap_resolution: 0.025
+octomap_frame: world
+
+sensors:
+  - disabled
+
+disabled:
+  sensor_plugin: "~"

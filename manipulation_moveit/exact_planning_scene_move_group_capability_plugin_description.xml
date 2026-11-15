@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Register the exact-scene plan-only MoveGroup capability. -->
+<library path="manipulation_moveit_exact_scene_move_group_capability">
+  <class
+    name="manipulation_moveit/ExactPlanningSceneMoveGroupCapability"
+    type="manipulation::moveit::ExactPlanningSceneMoveGroupCapability"
+    base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Plans through the selected MoveIt pipeline using an exact request-owned full PlanningScene.
+    </description>
+  </class>
+</library>

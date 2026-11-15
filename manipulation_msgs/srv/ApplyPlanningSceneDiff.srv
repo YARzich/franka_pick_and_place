@@ -1,0 +1,19 @@
+# Responsibility: Apply an idempotent PlanningScene mutation under an active lease.
+# The coordinator accepts only supported diff fields whose derived world,
+# attached and ACM resource set is covered by resource_keys. Unsupported scene
+# mutations are rejected instead of trusting a caller-provided key list.
+string lease_id
+
+# Stable caller-generated ID. Repeating a completed operation_id returns its
+# recorded result without applying the diff twice.
+string operation_id
+
+# Optimistic concurrency check. The request is rejected when this does not
+# equal the coordinator's current revision.
+uint64 expected_revision
+
+# Every modified object/ACM resource must be named here and owned by lease_id.
+string[] resource_keys
+moveit_msgs/PlanningScene scene_diff
+---
+PlanningSceneOperationResult result

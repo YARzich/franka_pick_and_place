@@ -1,0 +1,6 @@
+# Responsibility: Preserve the observed dataset composition with explicit dataset-root placeholders.
+path: ${DATASETS_ROOT}/cube_synthetic_yolo_v2
+train: images/train
+val: images/val
+names:
+  0: cube

@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/manipulation_perception/gpu_perception_probe_contract.schema.v1.json",
+  "title": "GPU perception probe contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "observation_timeout_sec",
+    "minimum_observation_sec",
+    "terminal_freshness_sec",
+    "diagnostic_freshness_sec",
+    "minimum_input_delta",
+    "minimum_output_delta",
+    "minimum_latency_samples",
+    "topics",
+    "correlation_groups",
+    "terminal_pose_role",
+    "diagnostics",
+    "assets",
+    "gpu_identity"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "contract_id": {"$ref": "#/$defs/identifier"},
+    "observation_timeout_sec": {"type": "number", "exclusiveMinimum": 0},
+    "minimum_observation_sec": {"type": "number", "exclusiveMinimum": 0},
+    "terminal_freshness_sec": {"type": "number", "exclusiveMinimum": 0},
+    "diagnostic_freshness_sec": {"type": "number", "exclusiveMinimum": 0},
+    "minimum_input_delta": {"type": "integer", "minimum": 1},
+    "minimum_output_delta": {"type": "integer", "minimum": 1},
+    "minimum_latency_samples": {"type": "integer", "minimum": 1},
+    "topics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/topic"}
+    },
+    "correlation_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/correlation_group"}
+    },
+    "terminal_pose_role": {"$ref": "#/$defs/identifier"},
+    "diagnostics": {
+      "type": "array",
+      "minItems": 4,
+      "items": {"$ref": "#/$defs/diagnostic"}
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/asset"}
+    },
+    "gpu_identity": {"$ref": "#/$defs/gpu_identity"}
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "topic",
+        "message_type",
+        "frame_id",
+        "nonempty_field",
+        "capture_payload_digest",
+        "maximum_rate_hz"
+      ],
+      "properties": {
+        "role": {"$ref": "#/$defs/identifier"},
+        "topic": {"type": "string", "pattern": "^/(?!/).+$"},
+        "message_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*/msg/[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "frame_id": {"type": "string", "minLength": 1},
+        "nonempty_field": {
+          "oneOf": [
+            {"$ref": "#/$defs/identifier"},
+            {"type": "null"}
+          ]
+        },
+        "capture_payload_digest": {"type": "boolean"},
+        "maximum_rate_hz": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "correlation_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "roles"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identifier"},
+        "roles": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identifier"}
+        }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "status_name", "source_topic_role"],
+      "properties": {
+        "role": {"$ref": "#/$defs/identifier"},
+        "status_name": {"type": "string", "minLength": 1},
+        "source_topic_role": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "gpu_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv", "fields", "timeout_sec"],
+      "properties": {
+        "argv": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "prefixItems": [
+            {"const": "/usr/bin/nvidia-smi"},
+            {"const": "--query-gpu=name,uuid,driver_version,memory.total"},
+            {"const": "--format=csv,noheader,nounits"}
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "prefixItems": [
+            {"const": "name"},
+            {"const": "uuid"},
+            {"const": "driver_version"},
+            {"const": "memory_total"}
+          ]
+        },
+        "timeout_sec": {"type": "number", "exclusiveMinimum": 0}
+      }
+    }
+  }
+}

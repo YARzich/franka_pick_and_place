@@ -1,0 +1,19 @@
+# Responsibility: Select the compiled V2 workflow and its task-family physical policy.
+# Does not own: robot bindings, MoveIt policy, deployment endpoints, or simulation clock.
+franka_transfer_object_sequence_server:
+  ros__parameters:
+    workflow.strategy_id: pick_lift_place
+    workflow.observation_provider_id: detected
+    workflow.grasp_provider_id: mtc
+    workflow.object_catalog_file: package://franka_motion/config/tasks/object_catalog.yaml
+    workflow.observation_provider_config_file: package://franka_motion/config/tasks/detected_observation.yaml
+    workflow.grasp_provider_config_file: package://franka_motion/config/tasks/mtc_grasp_profiles.yaml
+    workflow.max_steps: 32
+
+    pick_lift_place.lift_clearance_m: 0.25
+    pick_lift_place.preplace_clearance_m: 0.12
+    pick_lift_place.retreat_clearance_m: 0.25
+    pick_lift_place.release_settle_sec: 0.3
+
+    physical_actions.arm_motion_timeout_sec: 30.0
+    physical_actions.gripper_command_timeout_sec: 3.0

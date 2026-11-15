@@ -1,0 +1,37 @@
+# Responsibility: Configure ServoToPose task policy and its MoveIt ROS adapter wiring.
+# Does not own: Panda frames, joints, arm resource identity, or ServoNode internals.
+/**/franka_moveit_servo_task_server:
+  ros__parameters:
+    servo_to_pose.preset_id: franka/reactive_pose
+    servo_to_pose.preset_schema_version: 1
+    servo_to_pose.action_name: ~/servo_to_pose
+    servo_to_pose.pause_service_name: ~/servo_to_pose/set_task_paused
+    servo_to_pose.heartbeat_period_sec: 0.025
+    servo_to_pose.default_timeout_sec: 30.0
+
+    # Keep these equal to pose_tracking in config/moveit/servo.yaml. A contract
+    # test prevents ServoNode from stopping before the action proves completion.
+    servo_to_pose.position_tolerance_m: 0.001
+    servo_to_pose.orientation_tolerance_rad: 0.01
+    servo_to_pose.stopped_velocity_tolerance: 0.01
+    servo_to_pose.required_target_samples: 3
+    servo_to_pose.required_stopped_samples: 3
+    servo_to_pose.halt_timeout_sec: 2.0
+
+    # Republish a target well before MoveIt Servo's 0.1 second timeout.
+    servo_to_pose.control_period_sec: 0.02
+    servo_to_pose.incoming_command_timeout_sec: 0.1
+    servo_to_pose.service_call_timeout_sec: 0.5
+    servo_to_pose.target_prepare_timeout_sec: 1.0
+    servo_to_pose.feedback_startup_timeout_sec: 1.0
+    servo_to_pose.observation_timeout_sec: 0.005
+
+    servo_to_pose.pose_command_topic: /servo_node/pose_target_cmds
+    servo_to_pose.command_type_service: /servo_node/switch_command_type
+    servo_to_pose.backend_pause_service: /servo_node/pause_servo
+    servo_to_pose.status_topic: /servo_node/status
+    servo_to_pose.joint_state_topic: /joint_states
+    servo_to_pose.poll_period_sec: 0.005
+    servo_to_pose.current_tf_max_age_sec: 0.25
+    servo_to_pose.joint_state_max_age_sec: 0.25
+    servo_to_pose.status_max_age_sec: 0.5

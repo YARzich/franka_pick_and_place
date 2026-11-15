@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Assemble Panda geometry and topic-based joint control for Isaac Sim. -->
+<robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!--
+      Isaac Sim assembly of the canonical Panda geometry. The topic-based
+      hardware normally owns arm and finger interfaces in one system because
+      Isaac publishes one joint-state vector and consumes one command vector.
+    -->
+    <xacro:arg name="initial_positions_file" default="$(find franka_motion)/config/control/initial_positions.yaml" />
+    <xacro:arg name="generate_ros2_control_tag" default="true" />
+    <xacro:arg name="ros2_control_plugin" default="topic_based_ros2_control/TopicBasedSystem" />
+    <xacro:arg name="ros2_hand_control_type" default="isaac" />
+    <xacro:arg name="joint_commands_topic" default="/isaac_joint_commands_raw" />
+    <xacro:arg name="joint_states_topic" default="/isaac_joint_states" />
+
+    <!-- Both finger joints are explicit because simulator feedback is authoritative. -->
+    <xacro:include filename="$(find franka_motion)/description/urdf/panda_nomimic.urdf.xacro" />
+    <xacro:include filename="$(find franka_motion)/description/ros2_control/panda.ros2_control.xacro" />
+    <xacro:include filename="$(find franka_motion)/description/ros2_control/panda_hand.ros2_control.xacro" />
+
+    <!-- Isaac authors the robot at world origin; scene placement belongs to the USD stage. -->
+    <link name="world" />
+    <joint name="panda_world_joint" type="fixed">
+        <parent link="world" />
+        <child link="panda_link0" />
+    </joint>
+
+    <!-- Description-only consumers can suppress hardware tags entirely. -->
+    <xacro:if value="$(arg generate_ros2_control_tag)">
+        <!-- The Isaac topic backend must not split one joint stream between systems. -->
+        <xacro:if value="$(eval ros2_hand_control_type == 'isaac')">
+            <xacro:panda_ros2_control
+                name="PandaIsaacSystem"
+                hardware_plugin="$(arg ros2_control_plugin)"
+                initial_positions_file="$(arg initial_positions_file)"
+                command_topic="$(arg joint_commands_topic)"
+                joint_state_topic="$(arg joint_states_topic)"
+                include_hand="true" />
+        </xacro:if>
+
+        <!-- Mock or alternate hand backends retain independent hand ownership. -->
+        <xacro:if value="$(eval ros2_hand_control_type != 'isaac')">
+            <xacro:panda_ros2_control
+                name="PandaIsaacSystem"
+                hardware_plugin="$(arg ros2_control_plugin)"
+                initial_positions_file="$(arg initial_positions_file)"
+                command_topic="$(arg joint_commands_topic)"
+                joint_state_topic="$(arg joint_states_topic)"
+                include_hand="false" />
+
+            <xacro:panda_hand_ros2_control
+                name="PandaHandIsaacSystem"
+                ros2_control_hardware_type="$(arg ros2_hand_control_type)"
+                command_topic="$(arg joint_commands_topic)"
+                joint_state_topic="$(arg joint_states_topic)"
+                initial_position="0.0" />
+        </xacro:if>
+    </xacro:if>
+
+</robot>

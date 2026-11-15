@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""
+Start the canonical Franka TransferObjectSequenceV2 request client.
+
+Responsibility:
+- Provide the stable ros2 executable entrypoint for the task client.
+
+Does not own:
+- Parameter parsing, action policy, rigid resolution, or motion execution.
+"""
+
+from franka_motion_runtime.tasks.sequence_client import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

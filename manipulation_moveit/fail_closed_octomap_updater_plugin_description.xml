@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Register the fail-closed point-cloud updater with MoveIt pluginlib. -->
+<library path="manipulation_moveit_fail_closed_octomap_updater">
+  <class
+    name="manipulation_moveit/FailClosedPointCloudOctomapUpdater"
+    type="manipulation::moveit::FailClosedPointCloudOctomapUpdater"
+    base_class_type="occupancy_map_monitor::OccupancyMapUpdater">
+    <description>
+      Rejects a cloud unless the self-filter contains transforms for every active robot shape.
+    </description>
+  </class>
+</library>

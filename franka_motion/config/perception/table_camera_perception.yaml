@@ -1,0 +1,265 @@
+# Responsibility: Define stable table-camera parameters shared across perception backends.
+# This integration profile is shared by common stereo and replaceable detector/
+# pose packages.  Keeping one public params-file path preserves node/parameter
+# contracts; implementation code and model assets remain with their owners.
+
+stereo_sgbm_pointcloud:
+  ros__parameters:
+    left_image_topic: /table_stereo/left/image_raw
+    right_image_topic: /table_stereo/right/image_raw
+    left_camera_info_topic: /table_stereo/left/camera_info
+    left_image_frame_id: table_stereo_left_optical_frame
+    right_image_frame_id: table_stereo_right_optical_frame
+    local_stereo_frame_id: table_stereo_left_optical_frame
+    disparity_topic: /table_stereo/disparity
+    depth_topic: /table_stereo/depth
+    point_cloud_topic: "$(var point_cloud_topic)"
+    octomap_point_cloud_topic: /table_stereo/octomap_points
+    point_cloud_frame: "$(var point_cloud_frame)"
+    allow_latest_tf_fallback: true
+    point_cloud_stride: $(var point_cloud_stride)
+    octomap_min_points: 32
+    run_every_n_frames: $(var run_every_n_frames)
+    baseline_m: 0.06
+    enhancer_tag: "$(var mode)"
+    publish_cluster_markers: false
+    table_plane_marker_topic: /table_stereo/table_plane
+    table_plane_coeffs_topic: /table_stereo/table_plane_coeffs
+    workspace_frame: "$(var workspace_frame)"
+    robot_base_frame: "$(var robot_base_frame)"
+    robot_reach_m: $(var robot_reach_m)
+    workspace_extra_ratio: $(var workspace_extra_ratio)
+    detection_bbox_stamped_topic: "$(var detection_bbox_stamped_topic)"
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 2.0
+    diagnostics.error_last_success_age_sec: 5.0
+
+image_resize_node_right:
+  ros__parameters:
+    output_width: 960
+    output_height: 576
+    encoding_desired: rgb8
+    keep_aspect_ratio: true
+
+image_resize_node_left:
+  ros__parameters:
+    output_width: 960
+    output_height: 576
+    encoding_desired: rgb8
+    keep_aspect_ratio: true
+
+ess_disparity:
+  ros__parameters:
+    engine_file_path: "$(var ess_engine_file_path)"
+    threshold: $(var ess_threshold)
+    input_layer_width: 960
+    input_layer_height: 576
+
+ess_disparity_frame_fix:
+  ros__parameters:
+    input_disparity_topic: /table_stereo/disparity
+    output_disparity_topic: /table_stereo/disparity_fixed
+    fallback_frame_id: table_stereo_left_optical_frame
+    force_frame_id: table_stereo_left_optical_frame
+
+ess_depth_pointcloud:
+  ros__parameters:
+    left_camera_info_topic: /table_stereo/left/camera_info_resize
+    disparity_topic: /table_stereo/disparity_ess_debug
+    depth_topic: /table_stereo/depth
+    point_cloud_topic: "$(var point_cloud_topic)"
+    octomap_point_cloud_topic: /table_stereo/octomap_points
+    point_cloud_frame: "$(var point_cloud_frame)"
+    allow_latest_tf_fallback: true
+    run_every_n_frames: $(var run_every_n_frames)
+    point_cloud_stride: $(var point_cloud_stride)
+    octomap_min_points: 32
+    baseline_m: 0.06
+    enhancer_tag: ess
+    min_valid_disparity_px: 1.0
+    min_depth_m: 0.15
+    max_depth_m: 5.0
+    publish_cluster_markers: false
+    use_external_disparity: true
+    external_disparity_topic: /table_stereo/disparity_fixed
+    use_detection_bbox_roi: false
+    detection_bbox_stamped_topic: "$(var detection_bbox_stamped_topic)"
+    detection_bbox_timeout_sec: $(var detection_bbox_timeout_sec)
+    table_plane_marker_topic: /table_stereo/table_plane
+    table_plane_coeffs_topic: /table_stereo/table_plane_coeffs
+    workspace_frame: "$(var workspace_frame)"
+    robot_base_frame: "$(var robot_base_frame)"
+    robot_reach_m: $(var robot_reach_m)
+    workspace_extra_ratio: $(var workspace_extra_ratio)
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 2.0
+    diagnostics.error_last_success_age_sec: 5.0
+
+foundationpose_input_frame_fix:
+  ros__parameters:
+    input_image_topic: /table_stereo/left/image_resize
+    input_camera_info_topic: /table_stereo/left/camera_info_resize
+    output_image_topic: /table_stereo/foundationpose/image
+    output_camera_info_topic: /table_stereo/foundationpose/camera_info
+    output_frame_id: table_stereo_left_optical_frame
+
+foundationpose_depth_clean:
+  ros__parameters:
+    input_depth_topic: /table_stereo/depth
+    output_depth_topic: /table_stereo/foundationpose/depth_clean
+
+foundationpose:
+  ros__parameters:
+    mesh_file_path: "$(var foundationpose_mesh_file_path)"
+    texture_path: "$(var foundationpose_texture_path)"
+    refine_model_file_path: "$(var foundationpose_refine_model_file_path)"
+    refine_engine_file_path: "$(var foundationpose_refine_engine_file_path)"
+    refine_input_tensor_names: [input_tensor1, input_tensor2]
+    refine_input_binding_names: [input1, input2]
+    refine_output_tensor_names: [output_tensor1, output_tensor2]
+    refine_output_binding_names: [output1, output2]
+    score_model_file_path: "$(var foundationpose_score_model_file_path)"
+    score_engine_file_path: "$(var foundationpose_score_engine_file_path)"
+    score_input_tensor_names: [input_tensor1, input_tensor2]
+    score_input_binding_names: [input1, input2]
+    score_output_tensor_names: [output_tensor]
+    score_output_binding_names: [output1]
+    min_depth: 0.15
+    max_depth: 5.0
+
+foundationpose_detection_to_pose:
+  ros__parameters:
+    input_detections_topic: /table_stereo/foundationpose/output
+    output_pose_topic: /table_stereo/cube_pose
+    output_marker_topic: /table_stereo/cube_geometry
+    output_frame: "$(var point_cloud_frame)"
+    marker_namespace: cube_geometry
+    fallback_object_size_m: 0.05
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 10.0
+    diagnostics.error_last_success_age_sec: 60.0
+
+megapose_detection:
+  ros__parameters:
+    image_topic: /table_stereo/foundationpose/image
+    camera_info_topic: /table_stereo/foundationpose/camera_info
+    depth_topic: /table_stereo/foundationpose/depth_clean
+    detection_bbox_stamped_topic: "$(var detection_bbox_stamped_topic)"
+    coarse_estimator: megapose
+    detection_mask_topic: /table_stereo/foundationpose/segmentation
+    output_detections_topic: /table_stereo/megapose/output
+    output_frame_id: table_stereo_left_optical_frame
+    megapose_python: "$(var megapose_python)"
+    megapose_data_dir: "$(var megapose_data_dir)"
+    megapose_model: "$(var megapose_model)"
+    object_label: "$(var megapose_object_label)"
+    mesh_file_path: "$(var megapose_mesh_file_path)"
+    mesh_units: "$(var megapose_mesh_units)"
+    depth_mode: "$(var megapose_depth_mode)"
+    run_every_n_frames: $(var megapose_run_every_n_frames)
+    min_inference_interval_sec: $(var megapose_min_inference_interval_sec)
+    bbox_timeout_sec: $(var megapose_bbox_timeout_sec)
+    process_timeout_sec: $(var megapose_process_timeout_sec)
+    persistent_worker: $(var megapose_persistent_worker)
+    bsz_images: $(var megapose_bsz_images)
+    bsz_objects: $(var megapose_bsz_objects)
+    gigapose_python: "$(var gigapose_python)"
+    gigapose_repo_dir: "$(var gigapose_repo_dir)"
+    gigapose_dinov2_repo_dir: "$(var gigapose_dinov2_repo_dir)"
+    gigapose_data_dir: "$(var gigapose_data_dir)"
+    gigapose_checkpoint_path: "$(var gigapose_checkpoint_path)"
+    gigapose_dataset_name: "$(var gigapose_dataset_name)"
+    gigapose_object_id: $(var gigapose_object_id)
+    gigapose_template_count: $(var gigapose_template_count)
+    gigapose_max_num_dets_per_forward: $(var gigapose_max_num_dets_per_forward)
+    gigapose_translation_scale: $(var gigapose_translation_scale)
+    gigapose_num_hypotheses: $(var gigapose_num_hypotheses)
+    gigapose_min_matching_score: $(var gigapose_min_matching_score)
+    gigapose_persistent_worker: $(var gigapose_persistent_worker)
+    gigapose_refiner_bsz_images: $(var gigapose_refiner_bsz_images)
+    gigapose_refiner_bsz_objects: $(var gigapose_refiner_bsz_objects)
+    gigapose_refiner_iterations: $(var gigapose_refiner_iterations)
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 10.0
+    diagnostics.error_last_success_age_sec: 60.0
+
+megapose_detection_to_pose:
+  ros__parameters:
+    input_detections_topic: /table_stereo/megapose/output
+    output_pose_topic: /table_stereo/cube_pose
+    output_marker_topic: /table_stereo/cube_geometry
+    output_frame: "$(var point_cloud_frame)"
+    marker_namespace: cube_geometry
+    fallback_object_size_m: 0.05
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 10.0
+    diagnostics.error_last_success_age_sec: 60.0
+
+yolo_visualizer:
+  ros__parameters:
+    image_topic: /table_stereo/left/image_raw
+    model_path: "$(var yolo_model_path)"
+    mask_model_path: "$(var yolo_mask_model_path)"
+    confidence_threshold: $(var yolo_confidence)
+    iou_threshold: $(var yolo_iou)
+    max_det: $(var yolo_max_det)
+    device: "$(var yolo_device)"
+    use_yolo_world: $(var yolo_use_world)
+    open_vocab_classes: "$(var yolo_open_vocab_classes)"
+    imgsz: $(var yolo_imgsz)
+    agnostic_nms: $(var yolo_agnostic_nms)
+    augment: $(var yolo_augment)
+    class_whitelist: "$(var yolo_class_whitelist)"
+    sahi_slice_width: $(var yolo_sahi_slice_width)
+    sahi_slice_height: $(var yolo_sahi_slice_height)
+    sahi_overlap_ratio: $(var yolo_sahi_overlap_ratio)
+    min_box_area_ratio: $(var yolo_min_box_area_ratio)
+    max_box_area_ratio: $(var yolo_max_box_area_ratio)
+    temporal_confirm_frames: $(var yolo_temporal_confirm_frames)
+    temporal_iou_threshold: $(var yolo_temporal_iou_threshold)
+    publish_detection_bbox: true
+    detection_bbox_topic: "$(var detection_bbox_topic)"
+    detection_bbox_stamped_topic: "$(var detection_bbox_stamped_topic)"
+    detection_bbox_frame_id: table_stereo_left_optical_frame
+    publish_detection_mask: false
+    detection_mask_topic: /table_stereo/foundationpose/segmentation
+    window_name: YOLO Camera Debug
+    run_every_n_frames: $(var yolo_run_every_n_frames)
+    show_fps: true
+    enable_window: false
+    enable_runtime_controls: false
+    diagnostics.require_success: true
+    diagnostics.warn_last_success_age_sec: 3.0
+    diagnostics.error_last_success_age_sec: 10.0
+
+# Camera-profile bindings keep table-camera diagnostics observable without
+# making object visibility a global prerequisite for unrelated robot motion.
+system_health_monitor:
+  ros__parameters:
+    perception_diagnostics.allowed_tasks:
+      - perception/stereo_depth_pointcloud
+      - perception/stereo_depth_pointcloud
+      - perception/yolo_detection
+      - perception/pose_estimation
+      - perception/pose_estimation
+    # Parallel HealthComponentStatus IDs: stereo, detection and pose estimation.
+    perception_diagnostics.component_ids:
+      - 8
+      - 8
+      - 9
+      - 10
+      - 10
+    # diagnostic_updater publishes "<node name>: <task name>" by default.
+    # Keep this list parallel to allowed_tasks; matching is exact by design.
+    # SGBM and ESS producers are mutually exclusive but share one typed state.
+    perception_diagnostics.status_names:
+      - "stereo_sgbm_pointcloud: perception/stereo_depth_pointcloud"
+      - "ess_depth_pointcloud: perception/stereo_depth_pointcloud"
+      - "yolo_visualizer: perception/yolo_detection"
+      - "foundationpose_detection_to_pose: perception/pose_estimation"
+      - "megapose_detection_to_pose: perception/pose_estimation"
+    # Perception remains visible in SystemHealth, but it is not a global motion
+    # prerequisite. A detected-object task owns the stricter rule: immediately
+    # before each grasp it waits for one fresh stamped object pose and matching
+    # grasp. This lets expected occlusion while carrying the cube remain a WARN
+    # instead of blocking the next task-specific perception wait.

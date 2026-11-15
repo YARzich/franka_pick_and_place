@@ -1,0 +1,4 @@
+# Responsibility: Read the coordinator session and revision without side effects.
+---
+PlanningSceneCoordinatorState state
+PlanningSceneOperationResult result

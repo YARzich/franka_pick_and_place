@@ -1,0 +1,199 @@
+# Responsibility: Record source and saved-run identities without historical private machine paths.
+schema_version: 1
+snapshot_basis: Current project-owned training scripts and retained run/data YAML;
+  not a historical source checkout for every training run.
+source_license: MIT, declared by perception_training/package.xml; model licenses are
+  separate.
+scripts:
+- path: scripts/augment_yolo_seg_edges.py
+  origin: perception_training/scripts/augment_yolo_seg_edges.py
+  origin_sha256: a3fa4db5e4921cff58b7ee6959befc96e4c72dd3ee4227ffc51649e9fe306dd6
+  origin_worktree_state: clean
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: 2cb0f307ebbb6124b2881a0a06f7ed72e1acd2aa41080bb62497f0ffade6d407
+  adaptations:
+  - Added file responsibility declaration.
+  - Defer optional image imports until after CLI argument parsing.
+- path: scripts/augment_yolo_seg_hard_cases.py
+  origin: perception_training/scripts/augment_yolo_seg_hard_cases.py
+  origin_sha256: 93f3b6808dc99f74f7b3e86a087f1b812530898720e59692473096c176632083
+  origin_worktree_state: ??
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: b3033e5179acf604892a29ab517cda194b57048ceb11882097ce89d6696e72a0
+  adaptations:
+  - Added file responsibility declaration.
+  - Defer optional image imports until after CLI argument parsing.
+  - Quote YAML output paths.
+- path: scripts/augment_yolo_seg_photometric.py
+  origin: perception_training/scripts/augment_yolo_seg_photometric.py
+  origin_sha256: 6ea795c76d13eff19f00af22c9639f3d77546623caf04a21b8427d55aff310e5
+  origin_worktree_state: clean
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: 1baa98bef691666592a4af57df11cc15871f31a3cebfac1b6bf34ef9980d5714
+  adaptations:
+  - Added file responsibility declaration.
+  - Defer optional image imports until after CLI argument parsing.
+  - Quote YAML output paths.
+- path: scripts/create_cube_screenshot_seg_dataset.py
+  origin: perception_training/scripts/create_cube_screenshot_seg_dataset.py
+  origin_sha256: 441b8c5a3ca0b0d82311dfc9ed6100dc668a9f123155372f17679876bd11c056
+  origin_worktree_state: ??
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: b1a6634bedebab565997d574ee3dbfbccee8c6e477f17919d3aa6cd460bbd8d5
+  adaptations:
+  - Added file responsibility declaration.
+  - Defer optional image imports until after CLI argument parsing.
+  - Quote YAML output paths.
+- path: scripts/generate_cube_synthetic_dataset.py
+  origin: perception_training/scripts/generate_cube_synthetic_dataset.py
+  origin_sha256: 344f249e8b5a733f17dd0c419502799cb70da5afba29e5d3ec3e591dea21bd09
+  origin_worktree_state: clean
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: 15ffe009747e6bc46a8096556ab00bc44de9de62a69f9fdb9eee38084834d39a
+  adaptations:
+  - Added file responsibility declaration.
+  - Require explicit output; use sibling source resources at their canonical paths.
+  - Reuse current sibling Isaac bootstrap before output writes; do not remove shared
+    crash dumps.
+  - Check scene/robot source files before dataset overwrite.
+  - Quote YAML output paths.
+- path: scripts/train_cube_yolo.py
+  origin: perception_training/scripts/train_cube_yolo.py
+  origin_sha256: 4addb934579fc61795bdf5972a5ef1183c3c26f2aed29c8e60d3e29dd5d59d0f
+  origin_worktree_state: M
+  source_basis: current worktree snapshot; historical training-run revision not recorded
+  copy_sha256: 2acd39474279536672db5b1694b941f75e4fdb2208ffd0f83593e1c3654cf0f6
+  adaptations:
+  - Added file responsibility declaration.
+  - Require an existing explicit base checkpoint before importing Ultralytics.
+  - Remove personal virtual-environment discovery and implicit base-model selection.
+runs:
+- checkpoint: cube_yolo26n_isaac_seg_v1.pt
+  recipe: recipes/cube_yolo26n_isaac_seg_v1.yaml
+  source_args: runs/train/cube_yolo26n_isaac_seg_v1/args.yaml
+  source_args_sha256: 4111d6b2cbc3bb5af7d5ae72ea4e71dceaf4669739dffd2af62b6ff02aca8bc0
+  settings_count: 109
+  dataset_manifest: datasets/cube_synthetic_yolo_seg_v1/data.yaml
+  source_dataset_manifest: datasets/cube_synthetic_yolo_seg_v1/data.yaml
+  source_dataset_sha256: 48ac82d73bea23ded307d31acf5e573ef1962e8c9d5478bb8b6c92ec43b3dd52
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: yolo26n-seg.pt
+  input_weights_in_bundle: false
+  recipe_sha256: 551db3421ea7c84e94e2a38b6ce55b551c7afdecb6f3c484542ad6135be2c16a
+  dataset_manifest_sha256: 5b705a8b73d35727f633fc289f3ddbc8679421734700ab2600ee4db5040ea629
+- checkpoint: cube_yolo26n_isaac_seg_v2.pt
+  recipe: recipes/cube_yolo26n_isaac_seg_v2.yaml
+  source_args: runs/train/cube_yolo26n_isaac_seg_v2/args.yaml
+  source_args_sha256: 1b7f197e8be12c94f253c6c55c1dde948e72b66315c573fd9eba228928bb2203
+  settings_count: 109
+  dataset_manifest: datasets/cube_synthetic_yolo_seg_v2/data.yaml
+  source_dataset_manifest: datasets/cube_synthetic_yolo_seg_v2/data.yaml
+  source_dataset_sha256: 05482fd669ab3a2266820c97ad284e12aba9eaea67a7ddd81669822732bf3da5
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: cube_yolo26n_isaac_seg_v1.pt
+  input_weights_in_bundle: true
+  recipe_sha256: 14aa2dc3c12fec66c33b62e33ddb0d5c702827bd65976a88705906dec1922643
+  dataset_manifest_sha256: d6af41e4680f35a0be4b686b4b1dc7a15047bea83b60bf20af50cf03f37d64f9
+- checkpoint: cube_yolo26n_isaac_seg_v3.pt
+  recipe: recipes/cube_yolo26n_isaac_seg_v3.yaml
+  source_args: runs/train/cube_yolo26n_lighting_seg_v3/args.yaml
+  source_args_sha256: 50a3f89ed6d99361ea991abdba114dc1929ad8b3dd5f53aa53e59698810f1f69
+  settings_count: 109
+  dataset_manifest: datasets/cube_hybrid_lighting_v3/data_with_replicator.yaml
+  source_dataset_manifest: datasets/cube_hybrid_lighting_v3/data_with_replicator.yaml
+  source_dataset_sha256: 0231ac042a40e17ebd711291227475ee801df7615a7e8e029dd1d490d64e3f10
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: cube_yolo26n_isaac_seg_v1.pt
+  input_weights_in_bundle: true
+  recipe_sha256: 4c6ae704e1644f15ac498bc60d5e6ee943685599ba6a8de1bc86a6733ccb1244
+  dataset_manifest_sha256: 1d09f1b50c64088b035c47b1bc77432254232df705f9e25be0d02aab2599aaf3
+- checkpoint: cube_yolo26n_isaac_seg_v4c.pt
+  recipe: recipes/cube_yolo26n_isaac_seg_v4c.yaml
+  source_args: runs/train/cube_yolo26n_hard_shadow_seg_v4c_short/args.yaml
+  source_args_sha256: cdacb9d1825e5664b1ccb37b6dcbabb54f9af0afa31006eabcb9cfa2242c6fa1
+  settings_count: 109
+  dataset_manifest: datasets/cube_hybrid_v4b_hard/data.yaml
+  source_dataset_manifest: datasets/cube_hybrid_v4b_hard/data.yaml
+  source_dataset_sha256: 374996b6ece920f5171c594362079f7ea6cd01c9f5e84724c24486d9993f34c5
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: cube_yolo26n_hard_shadow_seg_v4b2/weights/best.pt
+  input_weights_in_bundle: false
+  recipe_sha256: b67f6dace28a5be2ea3c73065a6254e82b7a59f224571b9cf9ee62262172486b
+  dataset_manifest_sha256: 5449a8cfc4a508815a0c119e85e20ca56826e40141c249007e05a1f98b15ad2c
+- checkpoint: cube_yolo26n_isaac_v2.pt
+  recipe: recipes/cube_yolo26n_isaac_v2.yaml
+  source_args: runs/train/cube_yolo26n_isaac_v2/args.yaml
+  source_args_sha256: a7e334a6835717a735242ad84c9ce1e35bd503ff05e8bce857f39dd59cde2af4
+  settings_count: 109
+  dataset_manifest: datasets/cube_synthetic_yolo_v2/data.yaml
+  source_dataset_manifest: datasets/cube_synthetic_yolo_v2/data.yaml
+  source_dataset_sha256: ff2462de350ac0a005110d4ea8afe8738f72d621ad42e0110a0a46f30c74040e
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: yolo26n.pt
+  input_weights_in_bundle: false
+  recipe_sha256: b10fc0d5ddbea8c1034f04d63d83c368acc763aca6ee9883bd40d036d141cd39
+  dataset_manifest_sha256: a9c99657e2317caf5b4b982a27f7ffbbd07374426a924ffa9d3f7ff21908223c
+- checkpoint: cube_yolo26s_isaac_seg_v5s.pt
+  recipe: recipes/cube_yolo26s_isaac_seg_v5s.yaml
+  source_args: runs/train/cube_yolo26s_seg_v5s_640_balanced/args.yaml
+  source_args_sha256: fce34f00a1bd6403fd2470057e99fdd9c7b6e6fc051258992f2fe03b249994fb
+  settings_count: 109
+  dataset_manifest: datasets/cube_hybrid_v5s_640_balanced/data.yaml
+  source_dataset_manifest: datasets/cube_hybrid_v5s_640_balanced/data.yaml
+  source_dataset_sha256: 375b352bd3fa7f3efda6f1adab27d4200668eaa62a8de907bd3a5d584cbf1127
+  normalized_settings:
+  - model
+  - data
+  - project
+  - save_dir
+  input_weights: yolo26s-seg.pt
+  input_weights_in_bundle: false
+  recipe_sha256: 175b22690a2f91ddb55b17b945c6b5cc3c85682739c07bd347abd86827d48209
+  dataset_manifest_sha256: 8607c66a6db5cbc8632333d57be244a31ec00fe0d202541f2cac28916edb4ea4
+versions:
+  checkpoint_ultralytics: 8.4.19
+  current_yolo_environment:
+    python: '3.12'
+    torch_version_py: 2.10.0+cu128
+    torchvision_metadata: 0.25.0
+    numpy: 1.26.4
+    opencv-python: 4.11.0.86
+    Pillow: 12.1.1
+    PyYAML: 6.0.3
+  historical_complete_environment_lock: false
+excluded:
+- training images and labels
+- upstream pretrained weights
+- intermediate v4b2 checkpoint
+- simulator SDK and external Python environments
+limits:
+- Source snapshots do not establish the exact script revision or generation arguments
+  of every saved run.
+- Dataset manifests record directory composition, not image-level provenance or training/validation
+  disjointness.
+- No bit-for-bit retraining claim is made.
+new_helpers:
+- path: scripts/prepare_recipe.py
+  sha256: 59fbde346360e0350528f3aafc6b4569cb17efbe7eeb0fc4eb6af79fb27ed7ac
+  purpose: Bind archived YAML to explicit local roots and print a native command without
+    running training.

@@ -1,0 +1,2466 @@
+{
+  "snapshot_schema_version": 1,
+  "package": "manipulation_msgs",
+  "interfaces": [
+    {
+      "type": "manipulation_msgs/action/ServoToPose",
+      "kind": "action",
+      "sections": [
+        {
+          "name": "goal",
+          "constants": [],
+          "fields": [
+            {
+              "name": "target_pose",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "geometry_msgs",
+                  "msg"
+                ],
+                "name": "PoseStamped"
+              }
+            },
+            {
+              "name": "timeout",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            }
+          ]
+        },
+        {
+          "name": "result",
+          "constants": [],
+          "fields": [
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "MotionTaskResult"
+              }
+            }
+          ]
+        },
+        {
+          "name": "feedback",
+          "constants": [],
+          "fields": [
+            {
+              "name": "state",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "ManipulationTaskState"
+              }
+            },
+            {
+              "name": "tracking_error_valid",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "linear_error_m",
+              "type": {
+                "kind": "basic",
+                "name": "double"
+              }
+            },
+            {
+              "name": "angular_error_rad",
+              "type": {
+                "kind": "basic",
+                "name": "double"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/action/TransferObjectSequenceV2",
+      "kind": "action",
+      "sections": [
+        {
+          "name": "goal",
+          "constants": [],
+          "fields": [
+            {
+              "name": "steps",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "namespaced",
+                  "namespaces": [
+                    "manipulation_msgs",
+                    "msg"
+                  ],
+                  "name": "TransferObjectStepV2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "result",
+          "constants": [
+            {
+              "name": "NO_FAILED_STEP",
+              "type": {
+                "kind": "basic",
+                "name": "int64"
+              },
+              "value": -1
+            }
+          ],
+          "fields": [
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "ManipulationTaskResult"
+              }
+            },
+            {
+              "name": "completed_step_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "failed_step_index",
+              "type": {
+                "kind": "basic",
+                "name": "int64"
+              }
+            },
+            {
+              "name": "step_results",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "namespaced",
+                  "namespaces": [
+                    "manipulation_msgs",
+                    "msg"
+                  ],
+                  "name": "ManipulationTaskResult"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "feedback",
+          "constants": [
+            {
+              "name": "WAITING_NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "WAITING_OBSERVATION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "WAITING_TRANSFORM",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "WAITING_GRASP_GENERATION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            },
+            {
+              "name": "WAITING_SCENE_READINESS",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 4
+            },
+            {
+              "name": "WAITING_HEALTH_READINESS",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 5
+            },
+            {
+              "name": "WAITING_PLANNING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 6
+            },
+            {
+              "name": "WAITING_ROS_ENDPOINT",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 7
+            }
+          ],
+          "fields": [
+            {
+              "name": "sequence_step_index",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "sequence_step_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "overall_progress",
+              "type": {
+                "kind": "basic",
+                "name": "float"
+              }
+            },
+            {
+              "name": "active_object_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "current_state",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "ManipulationTaskState"
+              }
+            },
+            {
+              "name": "waiting_reason",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/HealthComponentStatus",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "LEVEL_OK",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "LEVEL_WARN",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "LEVEL_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "LEVEL_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            },
+            {
+              "name": "COMPONENT_JOINT_STATES",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "COMPONENT_SIMULATION_CLOCK",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "COMPONENT_CONTROLLERS",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            },
+            {
+              "name": "COMPONENT_ROBOT_TF",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 4
+            },
+            {
+              "name": "COMPONENT_MOVE_GROUP",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 5
+            },
+            {
+              "name": "COMPONENT_GRIPPER",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 6
+            },
+            {
+              "name": "COMPONENT_PLANNING_SCENE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 7
+            },
+            {
+              "name": "COMPONENT_STEREO_PERCEPTION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 8
+            },
+            {
+              "name": "COMPONENT_OBJECT_DETECTION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 9
+            },
+            {
+              "name": "COMPONENT_POSE_ESTIMATION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 10
+            },
+            {
+              "name": "ISSUE_NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 0
+            },
+            {
+              "name": "ISSUE_JOINT_STATES_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 100
+            },
+            {
+              "name": "ISSUE_JOINT_STATES_DELAYED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 101
+            },
+            {
+              "name": "ISSUE_JOINT_STATES_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 102
+            },
+            {
+              "name": "ISSUE_REQUIRED_JOINTS_MISSING",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 103
+            },
+            {
+              "name": "ISSUE_JOINT_STAMP_MISSING",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 104
+            },
+            {
+              "name": "ISSUE_JOINT_STAMP_OUTSIDE_TOLERANCE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 105
+            },
+            {
+              "name": "ISSUE_SIMULATION_CLOCK_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 200
+            },
+            {
+              "name": "ISSUE_SIMULATION_CLOCK_DELAYED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 201
+            },
+            {
+              "name": "ISSUE_SIMULATION_CLOCK_STALLED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 202
+            },
+            {
+              "name": "ISSUE_CONTROLLER_STATE_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 300
+            },
+            {
+              "name": "ISSUE_CONTROLLER_STATE_DELAYED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 301
+            },
+            {
+              "name": "ISSUE_CONTROLLER_STATE_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 302
+            },
+            {
+              "name": "ISSUE_REQUIRED_CONTROLLERS_INACTIVE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 303
+            },
+            {
+              "name": "ISSUE_ROBOT_TF_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 400
+            },
+            {
+              "name": "ISSUE_MOVE_GROUP_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 500
+            },
+            {
+              "name": "ISSUE_GRIPPER_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 600
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_COORDINATOR_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 700
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_STATE_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 701
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_STATE_DELAYED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 702
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_STATE_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 703
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_OPERATION_IN_PROGRESS",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 704
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_OPERATION_STUCK",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 705
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_BACKEND_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 706
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_BACKEND_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 707
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_RECONCILIATION_REQUIRED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 708
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_LEASE_EXPIRED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 709
+            },
+            {
+              "name": "ISSUE_PLANNING_SCENE_OPERATION_CAPACITY_EXHAUSTED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 710
+            },
+            {
+              "name": "ISSUE_PERCEPTION_DIAGNOSTIC_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 800
+            },
+            {
+              "name": "ISSUE_PERCEPTION_DIAGNOSTIC_DELAYED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 801
+            },
+            {
+              "name": "ISSUE_PERCEPTION_DIAGNOSTIC_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 802
+            },
+            {
+              "name": "ISSUE_PERCEPTION_PIPELINE_REPORTED_WARN",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 803
+            },
+            {
+              "name": "ISSUE_PERCEPTION_PIPELINE_REPORTED_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 804
+            },
+            {
+              "name": "AGE_NOT_APPLICABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "AGE_SINCE_LAST_OBSERVATION",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "AGE_SINCE_MONITOR_START",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            }
+          ],
+          "fields": [
+            {
+              "name": "component_id",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "required",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "level",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "issue_codes",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "basic",
+                  "name": "uint16"
+                }
+              }
+            },
+            {
+              "name": "observed",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "startup_grace_active",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "age_semantics",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "steady_observation_age",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "detail",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/ManipulationTaskResult",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 0
+            },
+            {
+              "name": "CANCELED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 1
+            },
+            {
+              "name": "INVALID_GOAL",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 100
+            },
+            {
+              "name": "RESOURCE_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 101
+            },
+            {
+              "name": "ROBOT_STATE_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 102
+            },
+            {
+              "name": "CONTROLLER_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 103
+            },
+            {
+              "name": "TF_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 104
+            },
+            {
+              "name": "PERCEPTION_TIMEOUT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 105
+            },
+            {
+              "name": "PLANNING_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 106
+            },
+            {
+              "name": "EXECUTION_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 107
+            },
+            {
+              "name": "GRIPPER_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 108
+            },
+            {
+              "name": "SCENE_CONFLICT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 109
+            },
+            {
+              "name": "SCENE_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 110
+            },
+            {
+              "name": "TIMEOUT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 111
+            },
+            {
+              "name": "RECOVERY_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 112
+            },
+            {
+              "name": "INTERNAL_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 255
+            },
+            {
+              "name": "DISPOSITION_UNKNOWN",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "SAFE_IDLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "OBJECT_AT_SOURCE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "HOLDING_OBJECT",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            },
+            {
+              "name": "OBJECT_AT_TARGET",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 4
+            },
+            {
+              "name": "SCENE_UNCERTAIN",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 5
+            }
+          ],
+          "fields": [
+            {
+              "name": "success",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "error_code",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "error_message",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "final_disposition",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "recovery_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "elapsed",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/ManipulationTaskState",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "IDLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "VALIDATING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "WAITING_FOR_RESOURCES",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "PLANNING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            },
+            {
+              "name": "APPROACHING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 4
+            },
+            {
+              "name": "GRASPING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 5
+            },
+            {
+              "name": "ATTACHING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 6
+            },
+            {
+              "name": "LIFTING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 7
+            },
+            {
+              "name": "TRANSFERRING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 8
+            },
+            {
+              "name": "PLACING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 9
+            },
+            {
+              "name": "RELEASING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 10
+            },
+            {
+              "name": "DETACHING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 11
+            },
+            {
+              "name": "RETREATING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 12
+            },
+            {
+              "name": "RECOVERING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 13
+            },
+            {
+              "name": "COMPLETED",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 14
+            },
+            {
+              "name": "CANCELED",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 15
+            },
+            {
+              "name": "FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 16
+            },
+            {
+              "name": "TRACKING",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 17
+            }
+          ],
+          "fields": [
+            {
+              "name": "phase",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "progress",
+              "type": {
+                "kind": "basic",
+                "name": "float"
+              }
+            },
+            {
+              "name": "step_index",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "step_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "retry_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "recovery_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "paused",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "pause_pending",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "elapsed",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "detail",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/MotionTaskResult",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 0
+            },
+            {
+              "name": "CANCELED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 1
+            },
+            {
+              "name": "INVALID_GOAL",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 100
+            },
+            {
+              "name": "RESOURCE_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 101
+            },
+            {
+              "name": "ROBOT_STATE_STALE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 102
+            },
+            {
+              "name": "CONTROLLER_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 103
+            },
+            {
+              "name": "TF_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 104
+            },
+            {
+              "name": "PERCEPTION_TIMEOUT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 105
+            },
+            {
+              "name": "PLANNING_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 106
+            },
+            {
+              "name": "EXECUTION_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 107
+            },
+            {
+              "name": "GRIPPER_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 108
+            },
+            {
+              "name": "SCENE_CONFLICT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 109
+            },
+            {
+              "name": "SCENE_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 110
+            },
+            {
+              "name": "TIMEOUT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 111
+            },
+            {
+              "name": "RECOVERY_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 112
+            },
+            {
+              "name": "INTERNAL_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 255
+            }
+          ],
+          "fields": [
+            {
+              "name": "success",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "error_code",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "error_message",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "stop_confirmed",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "recovery_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "elapsed",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/PlanningSceneCoordinatorState",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [],
+          "fields": [
+            {
+              "name": "session_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "revision",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "active_lease_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "operation_record_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "operation_in_progress",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "backend_service_ready",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "reconciliation_required",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "last_backend_error_code",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "expired_lease_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "unreconciled_lease_expiry_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "operation_record_capacity",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "operation_capacity_exhausted",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "quarantined_resource_count",
+              "type": {
+                "kind": "basic",
+                "name": "uint32"
+              }
+            },
+            {
+              "name": "quarantined_resource_keys",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "string",
+                  "wide": false,
+                  "maximum_size": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/PlanningSceneOperationResult",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 0
+            },
+            {
+              "name": "INVALID_REQUEST",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 100
+            },
+            {
+              "name": "RESOURCE_CONFLICT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 101
+            },
+            {
+              "name": "LEASE_NOT_FOUND",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 102
+            },
+            {
+              "name": "LEASE_EXPIRED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 103
+            },
+            {
+              "name": "NOT_OWNER",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 104
+            },
+            {
+              "name": "REVISION_MISMATCH",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 105
+            },
+            {
+              "name": "BACKEND_FAILED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 106
+            },
+            {
+              "name": "TIMEOUT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 107
+            },
+            {
+              "name": "SESSION_MISMATCH",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 108
+            },
+            {
+              "name": "IDEMPOTENCY_CONFLICT",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 109
+            },
+            {
+              "name": "OPERATION_IN_PROGRESS",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 110
+            },
+            {
+              "name": "OPERATION_TICKET_INVALID",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 111
+            },
+            {
+              "name": "OPERATION_CAPACITY_EXCEEDED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 112
+            },
+            {
+              "name": "RECONCILIATION_REQUIRED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 113
+            },
+            {
+              "name": "DEPENDENCY_UNAVAILABLE",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 114
+            },
+            {
+              "name": "RESOURCE_QUARANTINED",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 115
+            },
+            {
+              "name": "INTERNAL_ERROR",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              },
+              "value": 255
+            }
+          ],
+          "fields": [
+            {
+              "name": "success",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "error_code",
+              "type": {
+                "kind": "basic",
+                "name": "uint16"
+              }
+            },
+            {
+              "name": "revision",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "message",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/SystemHealthSnapshot",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [],
+          "fields": [
+            {
+              "name": "sample_stamp",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Time"
+              }
+            },
+            {
+              "name": "sequence",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "steady_uptime",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "motion_ready",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "overall_level",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "components",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "namespaced",
+                  "namespaces": [
+                    "manipulation_msgs",
+                    "msg"
+                  ],
+                  "name": "HealthComponentStatus"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/msg/TransferObjectStepV2",
+      "kind": "msg",
+      "sections": [
+        {
+          "name": "message",
+          "constants": [
+            {
+              "name": "TARGET_ABSOLUTE_POSE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "TARGET_TRANSLATION_FROM_CURRENT_SOURCE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "TARGET_INITIAL_SOURCE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "RECOVERY_NONE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "RECOVERY_SAFE_STOP",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            },
+            {
+              "name": "RECOVERY_RETREAT",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 2
+            },
+            {
+              "name": "RECOVERY_RETREAT_AND_HOME",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 3
+            }
+          ],
+          "fields": [
+            {
+              "name": "object_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "target_mode",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "target_object_pose",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "geometry_msgs",
+                  "msg"
+                ],
+                "name": "PoseStamped"
+              }
+            },
+            {
+              "name": "target_translation",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "geometry_msgs",
+                  "msg"
+                ],
+                "name": "Vector3Stamped"
+              }
+            },
+            {
+              "name": "return_home",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "recovery_policy",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/AcquirePlanningSceneLease",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "owner_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "resource_keys",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "string",
+                  "wide": false,
+                  "maximum_size": null
+                }
+              }
+            },
+            {
+              "name": "requested_ttl",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "lease_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "granted_ttl",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/ApplyPlanningSceneDiff",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "lease_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "operation_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "expected_revision",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "resource_keys",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "string",
+                  "wide": false,
+                  "maximum_size": null
+                }
+              }
+            },
+            {
+              "name": "scene_diff",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "moveit_msgs",
+                  "msg"
+                ],
+                "name": "PlanningScene"
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/GetPlanningSceneState",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": []
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "state",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneCoordinatorState"
+              }
+            },
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/GetSystemHealth",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": []
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "snapshot",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "SystemHealthSnapshot"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/ReconcilePlanningScene",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [
+            {
+              "name": "PRESERVE_QUARANTINE",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 0
+            },
+            {
+              "name": "ACCEPT_QUARANTINED_RESOURCES",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              },
+              "value": 1
+            }
+          ],
+          "fields": [
+            {
+              "name": "expected_session_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "expected_revision",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            },
+            {
+              "name": "accept_authoritative_state",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "quarantine_resolution",
+              "type": {
+                "kind": "basic",
+                "name": "uint8"
+              }
+            },
+            {
+              "name": "expected_quarantined_resource_keys",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "string",
+                  "wide": false,
+                  "maximum_size": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "new_session_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/ReleasePlanningSceneLease",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "lease_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/RenewPlanningSceneLease",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "lease_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "requested_ttl",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "granted_ttl",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/SetTaskPaused",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "goal_id",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "unique_identifier_msgs",
+                  "msg"
+                ],
+                "name": "UUID"
+              }
+            },
+            {
+              "name": "paused",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "accepted",
+              "type": {
+                "kind": "basic",
+                "name": "boolean"
+              }
+            },
+            {
+              "name": "message",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "manipulation_msgs/srv/ValidatePlanningSceneLease",
+      "kind": "srv",
+      "sections": [
+        {
+          "name": "request",
+          "constants": [],
+          "fields": [
+            {
+              "name": "lease_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "required_resource_keys",
+              "type": {
+                "kind": "sequence",
+                "maximum_size": null,
+                "value_type": {
+                  "kind": "string",
+                  "wide": false,
+                  "maximum_size": null
+                }
+              }
+            },
+            {
+              "name": "expected_revision",
+              "type": {
+                "kind": "basic",
+                "name": "uint64"
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "constants": [],
+          "fields": [
+            {
+              "name": "session_id",
+              "type": {
+                "kind": "string",
+                "wide": false,
+                "maximum_size": null
+              }
+            },
+            {
+              "name": "remaining_ttl",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "builtin_interfaces",
+                  "msg"
+                ],
+                "name": "Duration"
+              }
+            },
+            {
+              "name": "result",
+              "type": {
+                "kind": "namespaced",
+                "namespaces": [
+                  "manipulation_msgs",
+                  "msg"
+                ],
+                "name": "PlanningSceneOperationResult"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

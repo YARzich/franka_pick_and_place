@@ -1,0 +1,81 @@
+# Responsibility: Represent machine-readable health of one monitored component.
+
+uint8 LEVEL_OK=0
+uint8 LEVEL_WARN=1
+uint8 LEVEL_ERROR=2
+uint8 LEVEL_STALE=3
+
+uint8 COMPONENT_JOINT_STATES=1
+uint8 COMPONENT_SIMULATION_CLOCK=2
+uint8 COMPONENT_CONTROLLERS=3
+uint8 COMPONENT_ROBOT_TF=4
+uint8 COMPONENT_MOVE_GROUP=5
+uint8 COMPONENT_GRIPPER=6
+uint8 COMPONENT_PLANNING_SCENE=7
+# Perception IDs are backend-neutral; diagnostic task names are adapter config.
+uint8 COMPONENT_STEREO_PERCEPTION=8
+uint8 COMPONENT_OBJECT_DETECTION=9
+uint8 COMPONENT_POSE_ESTIMATION=10
+
+uint16 ISSUE_NONE=0
+uint16 ISSUE_JOINT_STATES_UNAVAILABLE=100
+uint16 ISSUE_JOINT_STATES_DELAYED=101
+uint16 ISSUE_JOINT_STATES_STALE=102
+uint16 ISSUE_REQUIRED_JOINTS_MISSING=103
+uint16 ISSUE_JOINT_STAMP_MISSING=104
+uint16 ISSUE_JOINT_STAMP_OUTSIDE_TOLERANCE=105
+uint16 ISSUE_SIMULATION_CLOCK_UNAVAILABLE=200
+uint16 ISSUE_SIMULATION_CLOCK_DELAYED=201
+uint16 ISSUE_SIMULATION_CLOCK_STALLED=202
+uint16 ISSUE_CONTROLLER_STATE_UNAVAILABLE=300
+uint16 ISSUE_CONTROLLER_STATE_DELAYED=301
+uint16 ISSUE_CONTROLLER_STATE_STALE=302
+uint16 ISSUE_REQUIRED_CONTROLLERS_INACTIVE=303
+uint16 ISSUE_ROBOT_TF_UNAVAILABLE=400
+uint16 ISSUE_MOVE_GROUP_UNAVAILABLE=500
+uint16 ISSUE_GRIPPER_UNAVAILABLE=600
+uint16 ISSUE_PLANNING_SCENE_COORDINATOR_UNAVAILABLE=700
+uint16 ISSUE_PLANNING_SCENE_STATE_UNAVAILABLE=701
+uint16 ISSUE_PLANNING_SCENE_STATE_DELAYED=702
+uint16 ISSUE_PLANNING_SCENE_STATE_STALE=703
+uint16 ISSUE_PLANNING_SCENE_OPERATION_IN_PROGRESS=704
+uint16 ISSUE_PLANNING_SCENE_OPERATION_STUCK=705
+uint16 ISSUE_PLANNING_SCENE_BACKEND_UNAVAILABLE=706
+uint16 ISSUE_PLANNING_SCENE_BACKEND_ERROR=707
+uint16 ISSUE_PLANNING_SCENE_RECONCILIATION_REQUIRED=708
+uint16 ISSUE_PLANNING_SCENE_LEASE_EXPIRED=709
+uint16 ISSUE_PLANNING_SCENE_OPERATION_CAPACITY_EXHAUSTED=710
+# Combine these generic perception issues with component_id for automation.
+uint16 ISSUE_PERCEPTION_DIAGNOSTIC_UNAVAILABLE=800
+uint16 ISSUE_PERCEPTION_DIAGNOSTIC_DELAYED=801
+uint16 ISSUE_PERCEPTION_DIAGNOSTIC_STALE=802
+uint16 ISSUE_PERCEPTION_PIPELINE_REPORTED_WARN=803
+uint16 ISSUE_PERCEPTION_PIPELINE_REPORTED_ERROR=804
+
+# Interpretation of steady_observation_age.
+uint8 AGE_NOT_APPLICABLE=0
+uint8 AGE_SINCE_LAST_OBSERVATION=1
+uint8 AGE_SINCE_MONITOR_START=2
+
+uint8 component_id
+bool required
+uint8 level
+
+# Empty means no known issue. Consumers may branch on these codes, but must
+# tolerate unknown future codes.
+uint16[] issue_codes
+
+# For streams and polled services, observed means that at least one successful
+# update was received. Synchronous readiness probes are observed at sampling
+# time and use AGE_NOT_APPLICABLE.
+bool observed
+bool startup_grace_active
+uint8 age_semantics
+
+# Computed from std::chrono::steady_clock. With AGE_SINCE_MONITOR_START this is
+# the age of an unseen source, not the age of a successful observation.
+builtin_interfaces/Duration steady_observation_age
+
+# Human-readable operator context. Automation must use component_id, level and
+# issue_codes instead of parsing this text.
+string detail

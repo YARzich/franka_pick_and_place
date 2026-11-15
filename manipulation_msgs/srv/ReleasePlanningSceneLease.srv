@@ -1,0 +1,4 @@
+# Responsibility: Release every PlanningScene resource owned by one lease.
+string lease_id
+---
+PlanningSceneOperationResult result

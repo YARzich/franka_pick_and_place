@@ -1,0 +1,28 @@
+# Responsibility: Reconcile coordinator bookkeeping with authoritative MoveIt state.
+# The caller must first
+# quiesce manipulation tasks and every legacy scene writer. This operation reads
+# MoveIt, invalidates every lease/quarantine/idempotency record and starts a new
+# coordinator session. It never changes MoveIt's PlanningScene.
+string expected_session_id
+uint64 expected_revision
+
+# Must be true. The explicit acknowledgement prevents an accidental state reset
+# from a generic service client or stale recovery request.
+bool accept_authoritative_state
+
+# Quarantine protects resource keys whose physical disposition became
+# uncertain when their lease expired. Accepting MoveIt's scene does not by
+# itself prove the robot/object state, so clearing quarantine requires this
+# separate typed operator/recovery acknowledgement.
+uint8 PRESERVE_QUARANTINE=0
+uint8 ACCEPT_QUARANTINED_RESOURCES=1
+uint8 quarantine_resolution
+
+# Exact semantic set copied from the latest coordinator state. Order is
+# ignored, but every key must be canonical and unique. Recovery is rejected if
+# the quarantine changed before the atomic session rebase. Keep this empty for
+# PRESERVE_QUARANTINE.
+string[] expected_quarantined_resource_keys
+---
+string new_session_id
+PlanningSceneOperationResult result

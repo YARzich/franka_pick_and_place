@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/franka/runtime_matrix.schema.v3.json",
+  "title": "Franka runtime validation matrix v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "matrix_id", "profiles"],
+  "properties": {
+    "schema_version": {"const": 3},
+    "matrix_id": {"type": "string", "minLength": 1},
+    "profiles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/profile"}
+    }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "argv", "timeout_sec"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+        "argv": {"$ref": "#/$defs/stringArray", "minItems": 1},
+        "timeout_sec": {"type": "number", "exclusiveMinimum": 0},
+        "expected_return_codes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "integer"},
+          "default": [0]
+        },
+        "stdout_regex": {"$ref": "#/$defs/stringArray"},
+        "retry_until_pass": {"type": "boolean"},
+        "retry_interval_sec": {"type": "number", "exclusiveMinimum": 0},
+        "repetitions": {"type": "integer", "minimum": 1}
+      }
+    },
+    "commandSequence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/command"}
+    },
+    "fault": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fault_id",
+        "inject",
+        "observe",
+        "recover",
+        "verify_recovered"
+      ],
+      "properties": {
+        "fault_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+        "inject": {"$ref": "#/$defs/commandSequence"},
+        "observe": {"$ref": "#/$defs/commandSequence"},
+        "recover": {"$ref": "#/$defs/commandSequence"},
+        "verify_recovered": {"$ref": "#/$defs/commandSequence"}
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "evidence_kind",
+        "deadline_sec",
+        "requirements",
+        "environment",
+        "preflight",
+        "background",
+        "readiness",
+        "validation"
+      ],
+      "properties": {
+        "platform": {"enum": ["gazebo", "isaac"]},
+        "evidence_kind": {
+          "enum": [
+            "simulator_motion",
+            "diagnostic_fault",
+            "simulator_soak",
+            "gpu_perception",
+            "detected_round_trip"
+          ]
+        },
+        "deadline_sec": {"type": "number", "exclusiveMinimum": 0},
+        "requirements": {
+          "$ref": "#/$defs/stringArray",
+          "minItems": 1
+        },
+        "environment": {
+          "type": "object",
+          "propertyNames": {"pattern": "^[A-Z][A-Z0-9_]*$"},
+          "additionalProperties": {"type": "string", "minLength": 1}
+        },
+        "preflight": {"$ref": "#/$defs/commandSequence"},
+        "background": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/command"}
+        },
+        "readiness": {"$ref": "#/$defs/commandSequence"},
+        "validation": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/command"}
+        },
+        "faults": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/fault"}
+        }
+      }
+    }
+  }
+}

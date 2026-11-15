@@ -1,0 +1,52 @@
+# Responsibility: Define a robot- and backend-independent reactive pose-tracking task.
+#
+# The server moves its configured controlled frame toward target_pose while
+# continuously reacting to the current robot state. The action does not name a
+# robot, controller, planner, command transport, or Servo implementation.
+
+# Desired pose of the server-configured controlled frame. header.frame_id is
+# the task reference frame in which this pose and feedback errors are evaluated.
+# It must be a canonical relative frame name without a leading slash.
+# header.stamp must be normalized and non-zero. Every pose component must be
+# finite and the quaternion must have unit norm. If the backend commands in
+# another frame, it must resolve the target with TF at that exact ROS timestamp;
+# falling back to latest TF is forbidden. The resolved target remains fixed for
+# the lifetime of the goal and is not retargeted by later TF updates.
+geometry_msgs/PoseStamped target_pose
+
+# Zero selects the server-configured timeout. A positive value must be longer
+# than the server's reserved safe-stop budget; shorter goals are rejected before
+# resource acquisition. An accepted value creates one steady-clock deadline
+# covering validation, resource acquisition, tracking, cooperative pauses, and
+# the final bounded stop. ROS time pauses or resets do not extend it, and time
+# spent paused still consumes the deadline.
+builtin_interfaces/Duration timeout
+---
+# Motion-only terminal result. Success means the configured pose tolerance was
+# reached, stop_confirmed was established from fresh velocity samples plus a
+# confirmed backend pause, and new post-stop pose samples remained in tolerance.
+MotionTaskResult result
+---
+# Standard task lifecycle, progress, pause state, and steady elapsed time.
+ManipulationTaskState state
+
+# True only when both following error values were computed from one current,
+# frame-consistent robot-state sample. Clients must ignore both values when
+# false. A server sets this false while no fresh sample or required TF exists.
+bool tracking_error_valid
+
+# Non-negative finite Euclidean translation error in metres, evaluated in the
+# task frame. Meaningful only when tracking_error_valid is true.
+float64 linear_error_m
+
+# Non-negative finite shortest rotation error in radians, in [0, pi] and
+# evaluated in the task frame. Meaningful only when tracking_error_valid is true.
+float64 angular_error_rad
+
+# Pause is cooperative: on a SetTaskPaused request the server stops issuing
+# motion commands, reports pause_pending until a bounded stop is confirmed, and
+# then reports paused. Resume tracks the same fixed target from the live robot
+# state. Cancel takes priority over pause/resume and similarly reaches a bounded
+# confirmed stop before returning CANCELED; failure to stop is reported as an
+# execution or recovery failure. Stale state or TF must trigger the same stop
+# path instead of continuing open-loop.

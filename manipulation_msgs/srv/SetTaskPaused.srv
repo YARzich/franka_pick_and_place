@@ -1,0 +1,13 @@
+# Responsibility: Request cooperative pause or resume for an active manipulation goal.
+# An all-zero goal_id addresses the only active goal on a single-goal server.
+# The service returns immediately: accepted=true means the request was stored,
+# not that motion has already stopped. Feedback first reports pause_pending and
+# reports paused only at the next server-defined safe checkpoint. Cancel always
+# takes priority over pause and wakes a paused task.
+unique_identifier_msgs/UUID goal_id
+bool paused
+---
+# Machine-readable acknowledgement that the request was stored. The message is
+# operator context only and must not be parsed by clients.
+bool accepted
+string message

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!-- Responsibility: Preserve the public Gazebo robot xacro path as a local alias. -->
+<robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find franka_motion)/description/urdf/panda_gazebo.urdf.xacro" />
+</robot>

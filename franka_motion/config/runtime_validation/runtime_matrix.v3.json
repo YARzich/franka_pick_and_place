@@ -1,0 +1,1534 @@
+{
+  "schema_version": 3,
+  "matrix_id": "franka-runtime-matrix-v3",
+  "profiles": {
+    "gazebo_smoke_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "simulator_motion",
+      "deadline_sec": 1200,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "franka-gazebo"],
+      "environment": {
+        "ROS_DOMAIN_ID": "71",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "bringup_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "gazebo_moveit_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_moveit_table.launch.py", "headless:=true", "use_sim_time:=true"],
+          "timeout_sec": 1200
+        }
+      ],
+      "readiness": [
+        {
+          "name": "gazebo_clock_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/clock", "rosgraph_msgs/msg/Clock"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_joint_states_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/joint_states", "sensor_msgs/msg/JointState"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_controllers_ready",
+          "argv": ["ros2", "control", "list_controllers"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^joint_state_broadcaster\\s+.*\\bactive\\b",
+            "(?m)^panda_arm_controller\\s+.*\\bactive\\b",
+            "(?m)^panda_hand_controller\\s+.*\\bactive\\b"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_actions_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^/move_action ",
+            "(?m)^/panda_arm_controller/follow_joint_trajectory ",
+            "(?m)^/panda_gripper/gripper_cmd ",
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_transfer_server_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/franka_transfer_object_sequence_server", "use_sim_time"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_scene_coordinator_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/planning_scene_coordinator", "use_sim_time"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_move_group_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/move_group", "use_sim_time"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_controller_manager_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/controller_manager", "use_sim_time"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_joint_states_nonzero_stamp",
+          "argv": ["ros2", "topic", "echo", "--once", "--filter", "m.header.stamp.sec != 0 or m.header.stamp.nanosec != 0", "/joint_states", "sensor_msgs/msg/JointState"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_world_to_panda_base_tf",
+          "argv": ["timeout", "--signal=INT", "--kill-after=2s", "5s", "ros2", "run", "tf2_ros", "tf2_echo", "world", "panda_link0", "-r", "10"],
+          "timeout_sec": 10,
+          "expected_return_codes": [124],
+          "stdout_regex": [
+            "(?m)^At time .+$",
+            "(?m)^- Translation: \\["
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "gazebo_health_ready_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        }
+      ],
+      "validation": [
+        {
+          "name": "gazebo_moveit_motion",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 300
+        }
+      ]
+    },
+    "gazebo_active_cancel_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "simulator_motion",
+      "deadline_sec": 1200,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "franka-gazebo"],
+      "environment": {
+        "ROS_DOMAIN_ID": "74",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "active_cancel_gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "active_cancel_bringup_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "active_cancel_gazebo_moveit_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_moveit_table.launch.py", "headless:=true", "use_sim_time:=true"],
+          "timeout_sec": 1200
+        }
+      ],
+      "readiness": [
+        {
+          "name": "active_cancel_clock_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/clock", "rosgraph_msgs/msg/Clock"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "active_cancel_joint_states_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/joint_states", "sensor_msgs/msg/JointState"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "active_cancel_controllers_ready",
+          "argv": ["ros2", "control", "list_controllers"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^joint_state_broadcaster\\s+.*\\bactive\\b",
+            "(?m)^panda_arm_controller\\s+.*\\bactive\\b",
+            "(?m)^panda_hand_controller\\s+.*\\bactive\\b"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "active_cancel_actions_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^/move_action ",
+            "(?m)^/panda_arm_controller/follow_joint_trajectory ",
+            "(?m)^/panda_gripper/gripper_cmd ",
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "active_cancel_health_ready_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        }
+      ],
+      "validation": [
+        {
+          "name": "gazebo_active_cancel_during_approach",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_active_cancel.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 300,
+          "stdout_regex": ["ACTIVE_CANCEL_PASS"]
+        }
+      ]
+    },
+    "gazebo_health_fault_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "diagnostic_fault",
+      "deadline_sec": 2400,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "franka-gazebo"],
+      "environment": {
+        "ROS_DOMAIN_ID": "72",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "fault_gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "fault_monitoring_package",
+          "argv": ["ros2", "pkg", "prefix", "manipulation"],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "fault_gazebo_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_moveit_table.launch.py", "headless:=true", "use_sim_time:=true"],
+          "timeout_sec": 2400
+        }
+      ],
+      "readiness": [
+        {
+          "name": "healthy_snapshot_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "controller",
+          "inject": [
+            {
+              "name": "controller_deactivate",
+              "argv": ["ros2", "control", "switch_controllers", "--deactivate", "panda_arm_controller", "--strict"],
+              "timeout_sec": 15
+            }
+          ],
+          "observe": [
+            {
+              "name": "controller_health_degraded",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: false$",
+                "(?ms)^- component_id: 3\n  required: true\n  level: 2\n  issue_codes:\n  - 303\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "controller_motion_admission_blocked",
+              "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+              "timeout_sec": 30,
+              "expected_return_codes": [1],
+              "stdout_regex": ["system health does not permit starting this transfer step"]
+            }
+          ],
+          "recover": [
+            {
+              "name": "controller_reactivate",
+              "argv": ["ros2", "control", "switch_controllers", "--activate", "panda_arm_controller", "--strict"],
+              "timeout_sec": 15
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "controller_active_again",
+              "argv": ["ros2", "control", "list_controllers"],
+              "timeout_sec": 10,
+              "stdout_regex": ["(?m)^panda_arm_controller\\s+.*\\bactive\\b"],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "controller_health_recovered",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: true$",
+                "(?ms)^- component_id: 3\n  required: true\n  level: 0\n  issue_codes: \\[\\]\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        },
+        {
+          "fault_id": "joint_sensor",
+          "inject": [
+            {
+              "name": "joint_sensor_force_stale",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_joint_states_stale", "true"],
+              "timeout_sec": 10
+            }
+          ],
+          "observe": [
+            {
+              "name": "joint_sensor_health_degraded",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: false$",
+                "(?ms)^- component_id: 1\n  required: true\n  level: 3\n  issue_codes:\n  - 102\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "joint_sensor_motion_admission_blocked",
+              "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+              "timeout_sec": 30,
+              "expected_return_codes": [1],
+              "stdout_regex": ["system health does not permit starting this transfer step"]
+            }
+          ],
+          "recover": [
+            {
+              "name": "joint_sensor_clear_fault",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_joint_states_stale", "false"],
+              "timeout_sec": 10
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "joint_sensor_health_recovered",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: true$",
+                "(?ms)^- component_id: 1\n  required: true\n  level: 0\n  issue_codes: \\[\\]\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        },
+        {
+          "fault_id": "moveit",
+          "inject": [
+            {
+              "name": "moveit_force_unavailable",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_motion_backend_unavailable", "true"],
+              "timeout_sec": 10
+            }
+          ],
+          "observe": [
+            {
+              "name": "moveit_health_degraded",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: false$",
+                "(?ms)^- component_id: 5\n  required: true\n  level: 2\n  issue_codes:\n  - 500\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "moveit_motion_admission_blocked",
+              "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+              "timeout_sec": 30,
+              "expected_return_codes": [1],
+              "stdout_regex": ["system health does not permit starting this transfer step"]
+            }
+          ],
+          "recover": [
+            {
+              "name": "moveit_clear_fault",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_motion_backend_unavailable", "false"],
+              "timeout_sec": 10
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "moveit_health_recovered",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: true$",
+                "(?ms)^- component_id: 5\n  required: true\n  level: 0\n  issue_codes: \\[\\]\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        },
+        {
+          "fault_id": "planning_scene",
+          "inject": [
+            {
+              "name": "planning_scene_force_unavailable",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_planning_scene_unavailable", "true"],
+              "timeout_sec": 10
+            }
+          ],
+          "observe": [
+            {
+              "name": "planning_scene_health_degraded",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: false$",
+                "(?ms)^- component_id: 7\n  required: true\n  level: 3\n  issue_codes:\n  - 703\n  - 700\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "planning_scene_motion_admission_blocked",
+              "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+              "timeout_sec": 30,
+              "expected_return_codes": [1],
+              "stdout_regex": ["system health does not permit starting this transfer step"]
+            }
+          ],
+          "recover": [
+            {
+              "name": "planning_scene_clear_fault",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_planning_scene_unavailable", "false"],
+              "timeout_sec": 10
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "planning_scene_health_recovered",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: true$",
+                "(?ms)^- component_id: 7\n  required: true\n  level: 0\n  issue_codes: \\[\\]\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        },
+        {
+          "fault_id": "tf",
+          "inject": [
+            {
+              "name": "tf_force_unavailable",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_tf_unavailable", "true"],
+              "timeout_sec": 10
+            }
+          ],
+          "observe": [
+            {
+              "name": "tf_health_degraded",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: false$",
+                "(?ms)^- component_id: 4\n  required: true\n  level: 2\n  issue_codes:\n  - 400\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            },
+            {
+              "name": "tf_motion_admission_blocked",
+              "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+              "timeout_sec": 30,
+              "expected_return_codes": [1],
+              "stdout_regex": ["system health does not permit starting this transfer step"]
+            }
+          ],
+          "recover": [
+            {
+              "name": "tf_clear_fault",
+              "argv": ["ros2", "param", "set", "/system_health_monitor", "fault_injection.force_tf_unavailable", "false"],
+              "timeout_sec": 10
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "tf_health_recovered",
+              "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^motion_ready: true$",
+                "(?ms)^- component_id: 4\n  required: true\n  level: 0\n  issue_codes: \\[\\]\n  observed:"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        }
+      ],
+      "validation": [
+        {
+          "name": "post_recovery_canonical_motion",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 300,
+          "expected_return_codes": [0]
+        }
+      ]
+    },
+    "gazebo_backend_death_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "diagnostic_fault",
+      "deadline_sec": 1200,
+      "requirements": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "ubuntu-24.04",
+        "ros2-jazzy",
+        "franka-gazebo"
+      ],
+      "environment": {
+        "ROS_DOMAIN_ID": "75",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "backend_death_gazebo_version",
+          "argv": [
+            "gz",
+            "sim",
+            "--versions"
+          ],
+          "timeout_sec": 15,
+          "stdout_regex": [
+            "(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          ]
+        },
+        {
+          "name": "backend_death_package",
+          "argv": [
+            "ros2",
+            "pkg",
+            "prefix",
+            "franka_motion"
+          ],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "backend_death_gazebo_bringup",
+          "argv": [
+            "ros2",
+            "launch",
+            "franka_motion",
+            "franka_gazebo_backend_death_validation.launch.py",
+            "headless:=true",
+            "use_sim_time:=true"
+          ],
+          "timeout_sec": 1200
+        }
+      ],
+      "readiness": [
+        {
+          "name": "backend_death_clock_ready",
+          "argv": [
+            "ros2",
+            "topic",
+            "echo",
+            "--once",
+            "/clock",
+            "rosgraph_msgs/msg/Clock"
+          ],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "backend_death_actions_ready",
+          "argv": [
+            "ros2",
+            "action",
+            "list",
+            "-t"
+          ],
+          "timeout_sec": 15,
+          "stdout_regex": [
+            "(?m)^/move_action ",
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "backend_death_role_ready",
+          "argv": [
+            "ros2",
+            "run",
+            "franka_motion",
+            "franka_runtime_process_fault",
+            "status",
+            "--role",
+            "v2_transfer_workflow",
+            "--expect",
+            "running"
+          ],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "PROCESS_ROLE_STATE role=v2_transfer_workflow state=running generation=1 exit_code=None"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.25
+        },
+        {
+          "name": "backend_death_health_ready_after_startup_grace",
+          "argv": [
+            "ros2",
+            "topic",
+            "echo",
+            "--once",
+            "/system_health_monitor/health",
+            "manipulation_msgs/msg/SystemHealthSnapshot"
+          ],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "action_backend_process",
+          "inject": [
+            {
+              "name": "action_backend_sigkill",
+              "argv": [
+                "ros2",
+                "run",
+                "franka_motion",
+                "franka_runtime_process_fault",
+                "kill",
+                "--role",
+                "v2_transfer_workflow"
+              ],
+              "timeout_sec": 10,
+              "stdout_regex": [
+                "PROCESS_DEATH_INJECTED role=v2_transfer_workflow generation=1 signal=SIGKILL exit_code=-9"
+              ]
+            }
+          ],
+          "observe": [
+            {
+              "name": "action_backend_stopped_state",
+              "argv": [
+                "ros2",
+                "run",
+                "franka_motion",
+                "franka_runtime_process_fault",
+                "status",
+                "--role",
+                "v2_transfer_workflow",
+                "--expect",
+                "stopped"
+              ],
+              "timeout_sec": 10,
+              "stdout_regex": [
+                "PROCESS_ROLE_STATE role=v2_transfer_workflow state=stopped generation=1 exit_code=-9"
+              ]
+            },
+            {
+              "name": "action_backend_endpoint_absent",
+              "argv": [
+                "ros2",
+                "action",
+                "info",
+                "/transfer_object_sequence_v2"
+              ],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^Action servers: 0$"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.25
+            }
+          ],
+          "recover": [
+            {
+              "name": "action_backend_restart",
+              "argv": [
+                "ros2",
+                "run",
+                "franka_motion",
+                "franka_runtime_process_fault",
+                "restart",
+                "--role",
+                "v2_transfer_workflow"
+              ],
+              "timeout_sec": 10,
+              "stdout_regex": [
+                "PROCESS_ROLE_RESTARTED role=v2_transfer_workflow generation=2"
+              ]
+            }
+          ],
+          "verify_recovered": [
+            {
+              "name": "action_backend_running_again",
+              "argv": [
+                "ros2",
+                "run",
+                "franka_motion",
+                "franka_runtime_process_fault",
+                "status",
+                "--role",
+                "v2_transfer_workflow",
+                "--expect",
+                "running"
+              ],
+              "timeout_sec": 10,
+              "stdout_regex": [
+                "PROCESS_ROLE_STATE role=v2_transfer_workflow state=running generation=2 exit_code=None"
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.25
+            },
+            {
+              "name": "action_backend_action_ready_again",
+              "argv": [
+                "ros2",
+                "action",
+                "list",
+                "-t"
+              ],
+              "timeout_sec": 15,
+              "stdout_regex": [
+                "(?m)^/transfer_object_sequence_v2 "
+              ],
+              "retry_until_pass": true,
+              "retry_interval_sec": 0.5
+            }
+          ]
+        }
+      ],
+      "validation": [
+        {
+          "name": "post_backend_restart_canonical_motion",
+          "argv": [
+            "ros2",
+            "launch",
+            "franka_motion",
+            "franka_gazebo_move_cube.launch.py",
+            "use_sim_time:=true"
+          ],
+          "timeout_sec": 300
+        }
+      ]
+    },
+    "gazebo_gpu_perception_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "gpu_perception",
+      "deadline_sec": 1800,
+      "requirements": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "ubuntu-24.04",
+        "ros2-jazzy",
+        "franka-gazebo",
+        "nvidia-gpu",
+        "isaac-ros-4-1",
+        "franka-perception-gpu"
+      ],
+      "environment": {
+        "ROS_DOMAIN_ID": "76",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "gpu_perception_gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "gpu_perception_gpu_identity",
+          "argv": [
+            "/usr/bin/nvidia-smi",
+            "--query-gpu=name,uuid,driver_version,memory.total",
+            "--format=csv,noheader,nounits"
+          ],
+          "timeout_sec": 20,
+          "stdout_regex": ["(?m)^.+, GPU-.+, [0-9.]+, [0-9]+$"]
+        },
+        {
+          "name": "gpu_perception_package",
+          "argv": ["ros2", "pkg", "prefix", "manipulation_perception"],
+          "timeout_sec": 15
+        },
+        {
+          "name": "gpu_perception_scenario_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        },
+        {
+          "name": "gpu_perception_contract",
+          "argv": ["test", "-f", "${FRANKA_GPU_PERCEPTION_CONTRACT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_ess_engine",
+          "argv": ["test", "-f", "${FRANKA_GPU_ESS_ENGINE}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_yolo_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_YOLO_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_yolo_model",
+          "argv": ["test", "-f", "${FRANKA_GPU_YOLO_MODEL}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_megapose_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_MEGAPOSE_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_gigapose_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_GIGAPOSE_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_gigapose_repo",
+          "argv": ["test", "-f", "${FRANKA_GPU_GIGAPOSE_REPO_DIR}/configs/test.yaml"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_dinov2_repo",
+          "argv": ["test", "-f", "${FRANKA_GPU_DINOV2_REPO_DIR}/hubconf.py"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_gigapose_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_GIGAPOSE_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_megapose_coarse_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_MEGAPOSE_COARSE_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_megapose_refiner_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_MEGAPOSE_REFINER_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "gpu_perception_cube_mesh",
+          "argv": ["test", "-f", "${FRANKA_GPU_CUBE_MESH}"],
+          "timeout_sec": 10
+        }
+      ],
+      "background": [
+        {
+          "name": "gpu_perception_gazebo_bringup",
+          "argv": [
+            "ros2",
+            "launch",
+            "franka_motion",
+            "franka_gazebo_moveit_table_camera.launch.py",
+            "headless:=true",
+            "start_rviz:=false",
+            "start_transfer_server:=false",
+            "use_sim_time:=true",
+            "mode:=gigaPose",
+            "ess_engine_file_path:=${FRANKA_GPU_ESS_ENGINE}",
+            "yolo_python:=${FRANKA_GPU_YOLO_PYTHON}",
+            "yolo_model_path:=${FRANKA_GPU_YOLO_MODEL}",
+            "yolo_mask_model_path:=${FRANKA_GPU_YOLO_MODEL}",
+            "megapose_python:=${FRANKA_GPU_MEGAPOSE_PYTHON}",
+            "megapose_data_dir:=${FRANKA_GPU_MEGAPOSE_DATA_DIR}",
+            "megapose_mesh_file_path:=${FRANKA_GPU_CUBE_MESH}",
+            "gigapose_python:=${FRANKA_GPU_GIGAPOSE_PYTHON}",
+            "gigapose_repo_dir:=${FRANKA_GPU_GIGAPOSE_REPO_DIR}",
+            "gigapose_dinov2_repo_dir:=${FRANKA_GPU_DINOV2_REPO_DIR}",
+            "gigapose_data_dir:=${FRANKA_GPU_GIGAPOSE_DATA_DIR}",
+            "gigapose_checkpoint_path:=${FRANKA_GPU_GIGAPOSE_CHECKPOINT}",
+            "foundationpose_refine_model_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_REFINE_MODEL}",
+            "foundationpose_refine_engine_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_REFINE_ENGINE}",
+            "foundationpose_score_model_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_SCORE_MODEL}",
+            "foundationpose_score_engine_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_SCORE_ENGINE}"
+          ],
+          "timeout_sec": 1800
+        }
+      ],
+      "readiness": [
+        {
+          "name": "gpu_perception_clock_ready",
+          "argv": [
+            "ros2",
+            "topic",
+            "echo",
+            "--once",
+            "/clock",
+            "rosgraph_msgs/msg/Clock"
+          ],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "gpu_perception_topics_ready",
+          "argv": ["ros2", "topic", "list", "-t"],
+          "timeout_sec": 30,
+          "stdout_regex": [
+            "(?m)^/diagnostics \\[diagnostic_msgs/msg/DiagnosticArray\\]$",
+            "(?m)^/table_stereo/disparity_fixed \\[stereo_msgs/msg/DisparityImage\\]$",
+            "(?m)^/table_stereo/foundationpose/image \\[sensor_msgs/msg/Image\\]$",
+            "(?m)^/table_stereo/cube_detection2d \\[vision_msgs/msg/Detection2DArray\\]$",
+            "(?m)^/table_stereo/megapose/output \\[vision_msgs/msg/Detection3DArray\\]$",
+            "(?m)^/table_stereo/cube_pose \\[geometry_msgs/msg/PoseStamped\\]$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        }
+      ],
+      "validation": [
+        {
+          "name": "gpu_perception_correlated_runtime",
+          "argv": [
+            "ros2",
+            "run",
+            "manipulation_perception",
+            "gpu_perception_evidence_probe.py",
+            "--contract",
+            "${FRANKA_GPU_PERCEPTION_CONTRACT}",
+            "--artifact-dir",
+            "${FRANKA_RUNTIME_ARTIFACT_DIR}/gpu-perception",
+            "--run-token",
+            "${FRANKA_RUNTIME_RUN_TOKEN}",
+            "--revision",
+            "${GITHUB_SHA}",
+            "--asset",
+            "ess_engine",
+            "${FRANKA_GPU_ESS_ENGINE}",
+            "--asset",
+            "yolo_model",
+            "${FRANKA_GPU_YOLO_MODEL}",
+            "--asset",
+            "gigapose_checkpoint",
+            "${FRANKA_GPU_GIGAPOSE_CHECKPOINT}",
+            "--asset",
+            "megapose_coarse_checkpoint",
+            "${FRANKA_GPU_MEGAPOSE_COARSE_CHECKPOINT}",
+            "--asset",
+            "megapose_refiner_checkpoint",
+            "${FRANKA_GPU_MEGAPOSE_REFINER_CHECKPOINT}",
+            "--asset",
+            "cube_mesh",
+            "${FRANKA_GPU_CUBE_MESH}",
+            "--ros-args",
+            "-p",
+            "use_sim_time:=true"
+          ],
+          "timeout_sec": 360,
+          "stdout_regex": ["GPU_PERCEPTION_PASS"]
+        }
+      ]
+    },
+    "gazebo_detected_round_trip_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "detected_round_trip",
+      "deadline_sec": 5400,
+      "requirements": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "ubuntu-24.04",
+        "ros2-jazzy",
+        "franka-gazebo",
+        "nvidia-gpu",
+        "isaac-ros-4-1",
+        "franka-perception-gpu"
+      ],
+      "environment": {
+        "ROS_DOMAIN_ID": "77",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "detected_round_trip_gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "detected_round_trip_gpu_identity",
+          "argv": [
+            "/usr/bin/nvidia-smi",
+            "--query-gpu=name,uuid,driver_version,memory.total",
+            "--format=csv,noheader,nounits"
+          ],
+          "timeout_sec": 20,
+          "stdout_regex": ["(?m)^.+, GPU-.+, [0-9.]+, [0-9]+$"]
+        },
+        {
+          "name": "detected_round_trip_perception_package",
+          "argv": ["ros2", "pkg", "prefix", "manipulation_perception"],
+          "timeout_sec": 15
+        },
+        {
+          "name": "detected_round_trip_scenario_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        },
+        {
+          "name": "detected_round_trip_ess_engine",
+          "argv": ["test", "-f", "${FRANKA_GPU_ESS_ENGINE}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_yolo_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_YOLO_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_yolo_model",
+          "argv": ["test", "-f", "${FRANKA_GPU_YOLO_MODEL}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_megapose_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_MEGAPOSE_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_gigapose_python",
+          "argv": ["test", "-x", "${FRANKA_GPU_GIGAPOSE_PYTHON}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_gigapose_repo",
+          "argv": ["test", "-f", "${FRANKA_GPU_GIGAPOSE_REPO_DIR}/configs/test.yaml"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_dinov2_repo",
+          "argv": ["test", "-f", "${FRANKA_GPU_DINOV2_REPO_DIR}/hubconf.py"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_gigapose_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_GIGAPOSE_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_megapose_coarse_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_MEGAPOSE_COARSE_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_megapose_refiner_checkpoint",
+          "argv": ["test", "-f", "${FRANKA_GPU_MEGAPOSE_REFINER_CHECKPOINT}"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "detected_round_trip_cube_mesh",
+          "argv": ["test", "-f", "${FRANKA_GPU_CUBE_MESH}"],
+          "timeout_sec": 10
+        }
+      ],
+      "background": [
+        {
+          "name": "detected_round_trip_gazebo_bringup",
+          "argv": [
+            "ros2",
+            "launch",
+            "franka_motion",
+            "franka_gazebo_moveit_table_camera.launch.py",
+            "headless:=true",
+            "start_rviz:=false",
+            "start_transfer_server:=true",
+            "use_sim_time:=true",
+            "mode:=gigaPose",
+            "ess_engine_file_path:=${FRANKA_GPU_ESS_ENGINE}",
+            "yolo_python:=${FRANKA_GPU_YOLO_PYTHON}",
+            "yolo_model_path:=${FRANKA_GPU_YOLO_MODEL}",
+            "yolo_mask_model_path:=${FRANKA_GPU_YOLO_MODEL}",
+            "megapose_python:=${FRANKA_GPU_MEGAPOSE_PYTHON}",
+            "megapose_data_dir:=${FRANKA_GPU_MEGAPOSE_DATA_DIR}",
+            "megapose_mesh_file_path:=${FRANKA_GPU_CUBE_MESH}",
+            "gigapose_python:=${FRANKA_GPU_GIGAPOSE_PYTHON}",
+            "gigapose_repo_dir:=${FRANKA_GPU_GIGAPOSE_REPO_DIR}",
+            "gigapose_dinov2_repo_dir:=${FRANKA_GPU_DINOV2_REPO_DIR}",
+            "gigapose_data_dir:=${FRANKA_GPU_GIGAPOSE_DATA_DIR}",
+            "gigapose_checkpoint_path:=${FRANKA_GPU_GIGAPOSE_CHECKPOINT}",
+            "foundationpose_refine_model_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_REFINE_MODEL}",
+            "foundationpose_refine_engine_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_REFINE_ENGINE}",
+            "foundationpose_score_model_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_SCORE_MODEL}",
+            "foundationpose_score_engine_file_path:=${FRANKA_GPU_FOUNDATIONPOSE_SCORE_ENGINE}"
+          ],
+          "timeout_sec": 5400
+        }
+      ],
+      "readiness": [
+        {
+          "name": "detected_round_trip_clock_ready",
+          "argv": [
+            "ros2",
+            "topic",
+            "echo",
+            "--once",
+            "/clock",
+            "rosgraph_msgs/msg/Clock"
+          ],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "detected_round_trip_perception_topics_ready",
+          "argv": ["ros2", "topic", "list", "-t"],
+          "timeout_sec": 30,
+          "stdout_regex": [
+            "(?m)^/diagnostics \\[diagnostic_msgs/msg/DiagnosticArray\\]$",
+            "(?m)^/table_stereo/disparity_fixed \\[stereo_msgs/msg/DisparityImage\\]$",
+            "(?m)^/table_stereo/foundationpose/image \\[sensor_msgs/msg/Image\\]$",
+            "(?m)^/table_stereo/cube_detection2d \\[vision_msgs/msg/Detection2DArray\\]$",
+            "(?m)^/table_stereo/megapose/output \\[vision_msgs/msg/Detection3DArray\\]$",
+            "(?m)^/table_stereo/cube_pose \\[geometry_msgs/msg/PoseStamped\\]$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "detected_round_trip_transfer_action_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "detected_round_trip_health_ready_after_startup_grace",
+          "argv": [
+            "ros2",
+            "topic",
+            "echo",
+            "--once",
+            "/system_health_monitor/health",
+            "manipulation_msgs/msg/SystemHealthSnapshot"
+          ],
+          "timeout_sec": 90,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        }
+      ],
+      "validation": [
+        {
+          "name": "detected_round_trip_transfer_and_return",
+          "argv": [
+            "ros2",
+            "launch",
+            "franka_motion",
+            "franka_detected_cube_round_trip.launch.py",
+            "use_sim_time:=true"
+          ],
+          "timeout_sec": 600,
+          "repetitions": 5
+        }
+      ]
+    },
+    "gazebo_soak_v2": {
+      "platform": "gazebo",
+      "evidence_kind": "simulator_soak",
+      "deadline_sec": 7200,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "franka-gazebo"],
+      "environment": {
+        "ROS_DOMAIN_ID": "73",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "soak_gazebo_version",
+          "argv": ["gz", "sim", "--versions"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+$"]
+        },
+        {
+          "name": "soak_bringup_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "soak_gazebo_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_moveit_table.launch.py", "headless:=true", "use_sim_time:=true"],
+          "timeout_sec": 7200
+        }
+      ],
+      "readiness": [
+        {
+          "name": "soak_clock_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/clock", "rosgraph_msgs/msg/Clock"],
+          "timeout_sec": 15,
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "soak_controllers_ready",
+          "argv": ["ros2", "control", "list_controllers"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^panda_arm_controller\\s+.*\\bactive\\b",
+            "(?m)^panda_hand_controller\\s+.*\\bactive\\b"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "soak_transfer_action_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 10,
+          "stdout_regex": [
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        },
+        {
+          "name": "soak_health_ready_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 60,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 0.5
+        }
+      ],
+      "validation": [
+        {
+          "name": "soak_moveit_motion",
+          "argv": ["ros2", "launch", "franka_motion", "franka_gazebo_move_cube_round_trip.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 300,
+          "repetitions": 20
+        }
+      ]
+    },
+    "isaac_smoke_v2": {
+      "platform": "isaac",
+      "evidence_kind": "simulator_motion",
+      "deadline_sec": 1800,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "nvidia-gpu", "isaac-sim"],
+      "environment": {
+        "ROS_DOMAIN_ID": "81",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "isaac_gpu",
+          "argv": ["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+          "timeout_sec": 20
+        },
+        {
+          "name": "isaac_python",
+          "argv": ["${FRANKA_ISAAC_PYTHON}", "-c", "import importlib.util; assert importlib.util.find_spec('isaacsim'), 'Isaac Sim is missing from selected Python'"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "isaac_version",
+          "argv": ["${FRANKA_ISAAC_PYTHON}", "-c", "from importlib.util import find_spec; from pathlib import Path; p = Path(find_spec('isaacsim').origin).resolve().parent; root = p.parent.parent if p.parent.name == 'python_packages' else p; print((root / 'VERSION').read_text().strip())"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+"]
+        },
+        {
+          "name": "isaac_bringup_package",
+          "argv": ["ros2", "pkg", "prefix", "franka_motion"],
+          "timeout_sec": 15
+        }
+      ],
+      "background": [
+        {
+          "name": "isaac_moveit_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_isaac_moveit_table.launch.py", "headless:=true", "use_sim_time:=true", "wait_for_clock:=true", "isaac_python:=${FRANKA_ISAAC_PYTHON}", "ros_domain_id:=81", "rmw_implementation:=rmw_fastrtps_cpp"],
+          "timeout_sec": 1800
+        }
+      ],
+      "readiness": [
+        {
+          "name": "isaac_clock_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/clock", "rosgraph_msgs/msg/Clock"],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_joint_states_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/joint_states", "sensor_msgs/msg/JointState"],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_controllers_ready",
+          "argv": ["ros2", "control", "list_controllers"],
+          "timeout_sec": 15,
+          "stdout_regex": [
+            "(?m)^joint_state_broadcaster\\s+.*\\bactive\\b",
+            "(?m)^panda_arm_controller\\s+.*\\bactive\\b",
+            "(?m)^panda_hand_controller\\s+.*\\bactive\\b"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_actions_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 15,
+          "stdout_regex": [
+            "(?m)^/move_action ",
+            "(?m)^/panda_arm_controller/follow_joint_trajectory ",
+            "(?m)^/panda_gripper/gripper_cmd ",
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_transfer_server_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/franka_transfer_object_sequence_server", "use_sim_time"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_scene_coordinator_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/planning_scene_coordinator", "use_sim_time"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_move_group_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/move_group", "use_sim_time"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_controller_manager_sim_time",
+          "argv": ["ros2", "param", "get", "--timeout", "5", "/controller_manager", "use_sim_time"],
+          "timeout_sec": 15,
+          "stdout_regex": ["(?m)^Boolean value is: True$"],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_joint_states_nonzero_stamp",
+          "argv": ["ros2", "topic", "echo", "--once", "--filter", "m.header.stamp.sec != 0 or m.header.stamp.nanosec != 0", "/joint_states", "sensor_msgs/msg/JointState"],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_world_to_panda_base_tf",
+          "argv": ["timeout", "--signal=INT", "--kill-after=2s", "5s", "ros2", "run", "tf2_ros", "tf2_echo", "world", "panda_link0", "-r", "10"],
+          "timeout_sec": 10,
+          "expected_return_codes": [124],
+          "stdout_regex": [
+            "(?m)^At time .+$",
+            "(?m)^- Translation: \\["
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_health_ready_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 90,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        }
+      ],
+      "validation": [
+        {
+          "name": "isaac_moveit_motion",
+          "argv": ["ros2", "launch", "franka_motion", "franka_isaac_move_cube.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 480
+        }
+      ]
+    },
+    "isaac_soak_v2": {
+      "platform": "isaac",
+      "evidence_kind": "simulator_soak",
+      "deadline_sec": 10800,
+      "requirements": ["self-hosted", "linux", "x64", "ubuntu-24.04", "ros2-jazzy", "nvidia-gpu", "isaac-sim"],
+      "environment": {
+        "ROS_DOMAIN_ID": "82",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+        "RCUTILS_COLORIZED_OUTPUT": "0"
+      },
+      "preflight": [
+        {
+          "name": "isaac_soak_gpu",
+          "argv": ["nvidia-smi", "-L"],
+          "timeout_sec": 20
+        },
+        {
+          "name": "isaac_soak_python",
+          "argv": ["${FRANKA_ISAAC_PYTHON}", "-c", "import importlib.util; assert importlib.util.find_spec('isaacsim'), 'Isaac Sim is missing from selected Python'"],
+          "timeout_sec": 10
+        },
+        {
+          "name": "isaac_soak_version",
+          "argv": ["${FRANKA_ISAAC_PYTHON}", "-c", "from importlib.util import find_spec; from pathlib import Path; p = Path(find_spec('isaacsim').origin).resolve().parent; root = p.parent.parent if p.parent.name == 'python_packages' else p; print((root / 'VERSION').read_text().strip())"],
+          "timeout_sec": 10,
+          "stdout_regex": ["(?m)^[0-9]+\\.[0-9]+\\.[0-9]+"]
+        }
+      ],
+      "background": [
+        {
+          "name": "isaac_soak_bringup",
+          "argv": ["ros2", "launch", "franka_motion", "franka_isaac_moveit_table.launch.py", "headless:=true", "use_sim_time:=true", "wait_for_clock:=true", "isaac_python:=${FRANKA_ISAAC_PYTHON}", "ros_domain_id:=82", "rmw_implementation:=rmw_fastrtps_cpp"],
+          "timeout_sec": 10800
+        }
+      ],
+      "readiness": [
+        {
+          "name": "isaac_soak_clock_ready",
+          "argv": ["ros2", "topic", "echo", "--once", "/clock", "rosgraph_msgs/msg/Clock"],
+          "timeout_sec": 30,
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_soak_actions_ready",
+          "argv": ["ros2", "action", "list", "-t"],
+          "timeout_sec": 15,
+          "stdout_regex": [
+            "(?m)^/move_action ",
+            "(?m)^/panda_arm_controller/follow_joint_trajectory ",
+            "(?m)^/transfer_object_sequence_v2 "
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        },
+        {
+          "name": "isaac_soak_health_ready_after_startup_grace",
+          "argv": ["ros2", "topic", "echo", "--once", "/system_health_monitor/health", "manipulation_msgs/msg/SystemHealthSnapshot"],
+          "timeout_sec": 90,
+          "stdout_regex": [
+            "(?m)^motion_ready: true$",
+            "(?m)^steady_uptime:\n  sec: (?:1[0-9]|[2-9][0-9]*)$"
+          ],
+          "retry_until_pass": true,
+          "retry_interval_sec": 1.0
+        }
+      ],
+      "validation": [
+        {
+          "name": "isaac_soak_motion",
+          "argv": ["ros2", "launch", "franka_motion", "franka_isaac_move_cube_round_trip.launch.py", "use_sim_time:=true"],
+          "timeout_sec": 600,
+          "repetitions": 8
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# Responsibility: Record direct CPU/image/YOLO package versions observed during packaging.
+# Install a suitable PyTorch/torchvision pair separately for your GPU.
+# These pins are not a complete historical environment lock.
+ultralytics==8.4.19
+numpy==1.26.4
+opencv-python==4.11.0.86
+Pillow==12.1.1
+PyYAML==6.0.3

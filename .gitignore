@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.colcon/
+.idea/
+.obsidian/
+.thumbs/
+.vscode/
+*.last_generated
+compile_commands.json
+
+# In-source ROS/colcon artifacts are never package sources.
+build/
+install/
+log/
+
+# Local credentials and environment bindings are operator-owned inputs.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/
